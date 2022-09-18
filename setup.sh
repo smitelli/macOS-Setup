@@ -42,16 +42,14 @@ PATH="$PATH:/usr/libexec"
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Install utilities that are required for this script
-brew install git mysides stow wget
+brew install git mysides stow
 
 # Install Consolas font family system-wide
-for font in consola consolab consolai consolaz; do
-    wget -O "/Library/Fonts/${font}.ttf" "https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/data/${font}.ttf"
-done
+curl -fL 'https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/data/{consola,consolab,consolai,consolaz}.ttf' -o '/Library/Fonts/#1.ttf'
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC=$(mktemp)
-wget -O "$ZIPSRC" "https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/data/adftss.zip"
+curl -fL "https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/data/adftss.zip" -o "$ZIPSRC"
 unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
 xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
 
