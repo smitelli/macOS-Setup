@@ -3,7 +3,7 @@
 by [Scott Smitelli](mailto:scott@smitelli.com)
 
 ```bash
-export HOSTNAME=macbeth
+export SET_HOSTNAME=macbeth
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/setup.sh)"
 ```
 
