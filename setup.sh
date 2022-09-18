@@ -6,7 +6,7 @@
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
 # External customizations
-HOSTNAME="${HOSTNAME:-$(scutil --get ComputerName)}"
+SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
 
 # Make a base64-encoded blob containing a binary plist.
@@ -276,8 +276,8 @@ sudo pmset -c displaysleep 0
 sudo pmset -c sleep 0
 
 # [12.5] Sharing > Computer Name = ...
-sudo scutil --set LocalHostName "$HOSTNAME"
-sudo scutil --set ComputerName "$HOSTNAME"
+sudo scutil --set LocalHostName "$SET_HOSTNAME"
+sudo scutil --set ComputerName "$SET_HOSTNAME"
 dscacheutil -flushcache
 
 # [12.5] Sharing > AirPlay Receiver = off
@@ -487,9 +487,9 @@ COMMENT
 # ====================
 
 if [ "$CAPITALIZE_DISK" = true ]; then
-    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${HOSTNAME:0:1})${HOSTNAME:1}"
+    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${SET_HOSTNAME:0:1})${SET_HOSTNAME:1}"
 else
-    DISKNAME="$HOSTNAME"
+    DISKNAME="$SET_HOSTNAME"
 fi
 
 # [12.5] Rename APFS disks to "[Hostname]" and "[Hostname] Data"
