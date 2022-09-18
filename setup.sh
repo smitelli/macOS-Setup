@@ -1,12 +1,12 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # defaults read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults read)
 # defaults -currentHost read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults -currentHost read)
 # find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
-# This should be the hostname you *want*, not the one you have.
-HOSTNAME="${HOSTNAME:-$(hostname -s)}"
+# External customizations
+HOSTNAME="${HOSTNAME:-$(scutil --get ComputerName)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
 
 # Make a base64-encoded blob containing a binary plist.
@@ -66,6 +66,8 @@ popd
 if [ $(uname -p) = 'arm' ]; then
     softwareupdate --install-rosetta --agree-to-license
 fi
+
+set -x
 
 # ====================
 # System Preferences
