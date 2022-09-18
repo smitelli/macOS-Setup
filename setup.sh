@@ -3,13 +3,11 @@
 # defaults read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults read)
 # defaults -currentHost read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults -currentHost read)
 # find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
+# F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
 # This should be the hostname you *want*, not the one you have.
 HOSTNAME="${HOSTNAME:-noname}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
-
-# Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
-PATH="$PATH:/usr/libexec"
 
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
@@ -22,6 +20,19 @@ _make_bplist() {
     echo "<data>$(base64 "$PLIST")</data>"
     rm -f "$PLIST"
 }
+
+# ====================
+# Initialization
+# ====================
+
+# Ask for the administrator password at the very beginning...
+sudo -v
+
+# ... and refresh it every 60 seconds until the script exits.
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
+PATH="$PATH:/usr/libexec"
 
 # ====================
 # Installations
@@ -244,6 +255,7 @@ defaults write -g NSAutomaticDashSubstitutionEnabled -bool 'false'
 # Trackpad > Point & Click > Tap to click = on (TODO test)
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool 'true'
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool 'true'
+defaults write -g com.apple.mouse.tapBehavior -int '1'
 defaults -currentHost write -g com.apple.mouse.tapBehavior -int '1'
 
 # [12.5] Trackpad > Point & Click > Tracking speed = 5/9
@@ -360,6 +372,17 @@ defaults write com.apple.finder _FXSortFoldersFirst -bool 'true'
 # [12.5] Preferences > Advanced > When performing a search = Search the Current Folder
 defaults write com.apple.finder FXDefaultSearchScope -string 'SCcf'
 
+# File > Get Info > Expand General, More Info, Name & Extension, Comments,
+# Open with, Preview, Sharing & Permissions.
+defaults write com.apple.finder FXInfoPanesExpanded -dict \
+    General -bool 'true' \
+    MetaData -bool 'true' \
+    Name -bool 'true' \
+    Comments -bool 'true' \
+    OpenWith -bool 'true' \
+    Preview -bool 'true' \
+    Privileges -bool 'true'
+
 # [12.5] View > as Columns
 defaults write com.apple.finder FXPreferredViewStyle -string 'clmv'
 
@@ -370,11 +393,28 @@ PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${
 PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 
+# UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
+defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
+
+# UNDOCUMENTED > Disable warning when changing file extensions
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
+
+# UNDOCUMENTED > Disable writing .DS_Store files on network shares
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
+
+# UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool 'true'
+
+# UNDOCUMENTED > Delay before showing tooltips (ms)
+defaults write -g NSInitialToolTipDelay -int 500
+
 # ====================
 # Dock
 # ====================
 
 <<COMMENT
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+
 - chrome
 - ff
 - terminal
@@ -459,6 +499,13 @@ defaults write com.apple.DiskUtility SidebarShowAllDevices -bool 'true'
 
 # [12.5] View > Show APFS Snapshots
 defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
+
+# ====================
+# Screenshot
+# ====================
+
+# Save screenshots to the clipboard
+defaults write com.apple.screencapture target -string 'clipboard'
 
 # ====================
 # Terminal
@@ -636,6 +683,9 @@ defaults write com.apple.Terminal 'Startup Window Settings' -string "$PROFILE_NA
 
 # Preferences > Profiles > Set [profile] as Default
 defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NAME"
+
+# View > Hide Marks
+defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 
 # ====================
 # Hope real hard that it all worked
