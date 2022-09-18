@@ -6,7 +6,7 @@
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
 # This should be the hostname you *want*, not the one you have.
-HOSTNAME="${HOSTNAME:-noname}"
+HOSTNAME="${HOSTNAME:-$(hostname -s)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
 
 # Make a base64-encoded blob containing a binary plist.
@@ -52,7 +52,7 @@ done
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC=$(mktemp)
 wget -O "$ZIPSRC" "https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/data/adftss.zip"
-unzip "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
+unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
 xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
 
 # Install Scottfiles
