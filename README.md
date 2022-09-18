@@ -4,7 +4,7 @@ by [Scott Smitelli](mailto:scott@smitelli.com)
 
 ```bash
 export SET_HOSTNAME=macbeth
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macos-setup/HEAD/setup.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/setup.sh)"
 ```
 
 ## Environment Variables
