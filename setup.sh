@@ -42,14 +42,14 @@ PATH="$PATH:/usr/libexec"
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Install utilities that are required for this script
-brew install git mysides stow
+brew install dockutil git mysides stow
 
 # Install Consolas font family system-wide
 curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/{consola,consolab,consolai,consolaz}.ttf' -o '/Library/Fonts/#1.ttf'
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC=$(mktemp)
-curl -fL "https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/adftss.zip" -o "$ZIPSRC"
+curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/adftss.zip' -o "$ZIPSRC"
 unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
 xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
 
@@ -252,6 +252,10 @@ defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticDashSubstitutionEnabled -bool 'false'
 
+# Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
+# TODO Figure out differences between 2 (from SysPrefs) and 3 (from randos)
+defaults write -g AppleKeyboardUIMode -int '3'
+
 # Trackpad > Point & Click > Tap to click = on (TODO test)
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool 'true'
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool 'true'
@@ -318,6 +322,12 @@ defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool
 # TODO defaults write MobileMeAccounts Accounts '(...)'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+# UNDOCUMENTED > Expand save dialogs by default
+defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
+
+# UNDOCUMENTED > Expand print dialogs by default
+defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
 
 # ====================
 # Widgets
@@ -686,6 +696,28 @@ defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NA
 
 # View > Hide Marks
 defaults write com.apple.Terminal ShowLineMarks -bool 'false'
+
+# ====================
+# Applications
+# ====================
+
+# Having Homebrew try to manage (extremely auto-updating) Firefox weirds me out
+DMG=$(mktemp)
+curl -fL 'https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US' -o "$DMG"
+hdiutil attach "$DMG"
+cp -rf /Volumes/Firefox/Firefox.app /Applications/Firefox.app
+hdiutil detach /Volumes/Firefox
+
+brew install keepassxc sublime-text vlc
+
+dockutil --add '/Applications/Firefox.app'
+dockutil --add '/Applications/Utilities/Terminal.app'
+dockutil --add '/Applications/Sublime Text.app'
+dockutil --add '/Applications/KeePassXC.app'
+dockutil --add '/Applications/VLC.app'
+dockutil --add '/Applications/Calculator.app'
+dockutil --add '/Applications/Utilities/Screenshot.app'
+dockutil --add '/Applications/Utilities/Activity Monitor.app'
 
 # ====================
 # Hope real hard that it all worked
