@@ -9,8 +9,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEA
 
 ## Environment Variables
 
-* `SET_HOSTNAME`: Defaults to the current hostname. Used to name the system on the network, and used as the base label name for the main disk.
-* `CAPITALIZE_DISK`: Default `true`. If true, the first letter of the hostname is capitalized when used as a disk label name. Otherwise the hostname is used unchanged.
+* `SET_HOSTNAME`: Defaults to the current hostname. Used to name the system on the network, and used as the base label name for the root disk.
+* `CAPITALIZE_DISK`: Default `true` if the existing root disk name looks to be capitalized already, otherwise `false`. If true, the first letter of the hostname is capitalized for use as the disk's label name. Otherwise the hostname is used unchanged.
 
 ## License
 

@@ -9,7 +9,7 @@
 
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
-CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
+CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
 
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
@@ -504,7 +504,12 @@ COMMENT
 # Disk Utility
 # ====================
 
-if [ "$CAPITALIZE_DISK" = true ]; then
+if [ "$CAPITALIZE_DISK" = 'unset' ]; then
+    VOLNAME=$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')
+    CAPITALIZE_DISK=$(python -c "print('true' if '${VOLNAME}'[0].isupper() else 'false')")
+fi
+
+if [ "$CAPITALIZE_DISK" = 'true' ]; then
     DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${SET_HOSTNAME:0:1})${SET_HOSTNAME:1}"
 else
     DISKNAME="$SET_HOSTNAME"
