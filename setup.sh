@@ -5,6 +5,9 @@
 # find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
+# TODO touch bar
+# TODO download user pics
+
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-true}"
@@ -42,7 +45,13 @@ PATH="$PATH:/usr/libexec"
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Install utilities that are required for this script
-brew install dockutil git mysides stow
+brew install git mysides stow
+
+# Install dockutil
+# TODO This can be done with brew when they get around to making a v3 forumula
+PKG=$(mktemp)
+curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil-3.0.2.pkg' -o "$PKG"
+sudo installer -verboseR -pkg "$PKG" -target /
 
 # Install Consolas font family system-wide
 curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/{consola,consolab,consolai,consolaz}.ttf' -o '/Library/Fonts/#1.ttf'
