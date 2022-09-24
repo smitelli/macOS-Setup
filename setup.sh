@@ -37,7 +37,12 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 PATH="$PATH:/usr/libexec"
 
 # Try to hit as many paths as possible to satisfy TCC/PPPC prompts upfront
-find "$HOME" > /dev/null
+echo "Poking around in ${HOME}; please allow access at each prompt..."
+find "$HOME" > /dev/null 2>&1
+
+# HACK: Do this first to get another permission prompt out of the way early.
+# [12.6] System Preferences > Desktop & Screen Saver > Desktop
+osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
 # ====================
 # Installations
@@ -51,7 +56,7 @@ brew install git mysides stow
 
 # Install dockutil
 # TODO This can be done with brew when they get around to making a v3 forumula
-PKG=$(mktemp)
+PKG="$(mktemp -d)/dockutil.pkg"
 curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil-3.0.2.pkg' -o "$PKG"
 sudo installer -verboseR -pkg "$PKG" -target /
 
@@ -123,14 +128,11 @@ defaults write -g AppleAccentColor -int '-1'
 defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
 
-# Desktop & Screen Saver > Desktop (TODO test)
-osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
-
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
 defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
-# Desktop & Screen Saver > Screen Saver > Choose "After Dark Flying Toasters" (TODO test)
+# [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
 defaults -currentHost write com.apple.screensaver moduleDict "<dict>
     <key>moduleName</key>
     <string>After Dark Flying Toasters</string>
@@ -172,10 +174,10 @@ defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
 # [12.5] Dock & Menu Bar > Spotlight > Show in Menu Bar = off
 defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
 
-# [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Wi-Fi > Show in Menu Bar = on
+# [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Battery > Show in Menu Bar = on
-# [12.5] Order = [focus] [display] [battery] [wi-fi] [sound] [bento] [clock]
+# [12.5] Order = [focus] [display] [battery] [wi-fi] [sound] [bento] [clock] (TODO bugged)
 defaults write com.apple.controlcenter '<dict>
     <key>NSStatusItem Preferred Position BentoBox</key>
     <real>128</real>
@@ -235,7 +237,7 @@ sudo dsimport "$RECORD" /Local/Default M
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
 sudo chsh -s /bin/bash $(logname)
 
-# Security & Privacy > Firewall > Turn On Firewall (TODO test)
+# [12.6] Security & Privacy > Firewall > Turn On Firewall
 sudo defaults write /Library/Preferences/com.apple.alf.plist globalstate -int '1'
 
 # [12.5] Security & Privacy > Privacy > Apple Advertising > Personalized Ads = off
@@ -274,11 +276,11 @@ defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticDashSubstitutionEnabled -bool 'false'
 
-# Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
+# [12.6] Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
 # TODO Figure out differences between 2 (from SysPrefs) and 3 (from randos)
 defaults write -g AppleKeyboardUIMode -int '3'
 
-# Trackpad > Point & Click > Tap to click = on (TODO test)
+# [12.6] Trackpad > Point & Click > Tap to click = on
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool 'true'
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool 'true'
 defaults write -g com.apple.mouse.tapBehavior -int '1'
@@ -345,13 +347,13 @@ defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
-# UNDOCUMENTED > Disable "Tips" service
+# UNDOCUMENTED > Disable "Tips" service (TODO test)
 launchctl disable "gui/$(id -u)/com.apple.tipsd"
 
-# UNDOCUMENTED > Expand save dialogs by default
+# [12.6] UNDOCUMENTED > Expand save dialogs by default
 defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
-# UNDOCUMENTED > Expand print dialogs by default
+# [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
 
 # ====================
@@ -431,7 +433,7 @@ PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${
 # UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
 defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
 
-# UNDOCUMENTED > Disable warning when changing file extensions
+# [12.6] UNDOCUMENTED > Disable warning when changing file extensions
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
 
 # UNDOCUMENTED > Disable writing .DS_Store files on network shares
@@ -440,37 +442,18 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
 # UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool 'true'
 
-# UNDOCUMENTED > Delay before showing tooltips (ms)
+# [12.6] UNDOCUMENTED > Delay before showing tooltips (ms)
 defaults write -g NSInitialToolTipDelay -int 500
 
 # ====================
 # Dock
 # ====================
 
-<<COMMENT
-defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
-
-- chrome
-- ff
-- terminal
-- sublime
-- keepassxc
-- vlc
-- calc
-- screenshot
-- activity
-**work**
-- amazon chime
-- docker
-- zoom
-COMMENT
-
 # [12.5] Remove all apps and recents from Dock
 defaults delete com.apple.dock.extra || true  # [12.5] doesn't exist on fresh install
 defaults write com.apple.dock persistent-apps '()'
 defaults write com.apple.dock persistent-others '()'
 defaults write com.apple.dock recent-apps '()'
-
 killall Dock
 
 # ====================
@@ -735,7 +718,27 @@ hdiutil attach "$DMG"
 cp -rf /Volumes/Firefox/Firefox.app /Applications/Firefox.app
 hdiutil detach /Volumes/Firefox
 
+# Install common apps and unquarantine each one
 brew install keepassxc sublime-text vlc
+xattr -dr com.apple.quarantine /Applications/KeePassXC.app
+xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
+xattr -dr com.apple.quarantine /Applications/VLC.app
+
+<<COMMENT
+- ff
+- terminal
+- sublime
+- keepassxc
+- vlc
+- calc
+- screenshot
+- activity
+**work**
+- chrome (before FF)
+- amazon chime
+- docker
+- zoom
+COMMENT
 
 dockutil --add '/Applications/Firefox.app'
 dockutil --add '/System/Applications/Utilities/Terminal.app'
@@ -745,6 +748,13 @@ dockutil --add '/Applications/VLC.app'
 dockutil --add '/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
+
+# ====================
+# Clean up
+# ====================
+
+# Remove Zsh stuff that isn't going to be used anymore (TODO test)
+rm -rf "${HOME}/.zsh_{history,sessions}"
 
 # ====================
 # Hope real hard that it all worked
