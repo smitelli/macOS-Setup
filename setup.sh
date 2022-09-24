@@ -310,40 +310,40 @@ dscacheutil -flushcache
 defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
 
 # Apple ID > iCloud > Photos = off
-# TODO Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > iCloud Drive = off
-# TODO ... "MOBILE_DOCUMENTS" ... ; iCloudHomeShouldEnable = 0
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "MOBILE_DOCUMENTS" ... ; iCloudHomeShouldEnable = 0
+# defaults write MobileMeAccounts Accounts '(...)'
 # PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveEnabled 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
 # PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveFirstSyncDownComplete 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
 # Apple ID > iCloud > Contacts = off
-# TODO ... "CONTACTS" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "CONTACTS" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Calendars = off
-# TODO ... "CALENDAR" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "CALENDAR" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Reminders = off
-# TODO ... "REMINDERS" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "REMINDERS" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Notes = off
-# TODO ... "NOTES" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "NOTES" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Safari = off
-# TODO ... "BOOKMARKS" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "BOOKMARKS" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > News = off
-# TODO ... "NEWS" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "NEWS" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Stocks = off
-# TODO ... "STOCKS" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "STOCKS" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Home = off
-# TODO ... "HOME" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "HOME" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 # Apple ID > iCloud > Siri = off
-# TODO ... "SIRI" ...
-# TODO defaults write MobileMeAccounts Accounts '(...)'
+# ... "SIRI" ...
+# defaults write MobileMeAccounts Accounts '(...)'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
@@ -749,7 +749,7 @@ dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 # ====================
 
 # Remove Zsh stuff that isn't going to be used anymore (TODO test)
-rm -rf "${HOME}/.zsh_{history,sessions}"
+rm -rf "${HOME}"/.zsh_{history,sessions}
 
 # ====================
 # Hope real hard that it all worked
