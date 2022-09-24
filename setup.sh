@@ -718,36 +718,26 @@ hdiutil attach "$DMG"
 cp -rf /Volumes/Firefox/Firefox.app /Applications/Firefox.app
 hdiutil detach /Volumes/Firefox
 
-# Install common apps and unquarantine each one
+# Install common apps
 brew install keepassxc sublime-text vlc
-xattr -dr com.apple.quarantine /Applications/KeePassXC.app
-xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
-xattr -dr com.apple.quarantine /Applications/VLC.app
 
-<<COMMENT
-- ff
-- terminal
-- sublime
-- keepassxc
-- vlc
-- calc
-- screenshot
-- activity
-**work**
-- chrome (before FF)
-- amazon chime
-- docker
-- zoom
-COMMENT
-
+# Add preferred apps to the Dock in order. For downloaded ones, unquarantine in
+# the process.
+# [WORK] Google Chrome
 dockutil --add '/Applications/Firefox.app'
 dockutil --add '/System/Applications/Utilities/Terminal.app'
+xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
 dockutil --add '/Applications/Sublime Text.app'
+xattr -dr com.apple.quarantine '/Applications/KeePassXC.app'
 dockutil --add '/Applications/KeePassXC.app'
+xattr -dr 'com.apple.quarantine /Applications/VLC.app'
 dockutil --add '/Applications/VLC.app'
 dockutil --add '/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
+# [WORK] Amazon Chime
+# [WORK] Docker
+# [WORK] zoom.us
 
 # ====================
 # Clean up
