@@ -221,6 +221,14 @@ PLIST='<?xml version="1.0" encoding="UTF-8"?>
 </plist>'
 defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
 
+# Users & Groups > [self] > Edit profile picture
+# Cherry-picked from https://apple.stackexchange.com/a/432510
+dscl . -delete "/Users/$(logname)" Picture
+dscl . -delete "/Users/$(logname)" JPEGPhoto
+RECORD="$(mktemp)"
+echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:RecordName base64:dsAttrTypeStandard:JPEGPhoto\n$(logname):${HOME}/Pictures/profile.jpg" > "$RECORD"
+dsimport "$RECORD" /Local/Default M
+
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
 sudo chsh -s /bin/bash $(logname)
 
