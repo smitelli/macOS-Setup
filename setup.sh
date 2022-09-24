@@ -7,8 +7,6 @@
 
 # TODO touch bar
 # TODO TouchID sudo https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L184
-# TODO FDE https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L227
-# TODO SW update https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L377
 
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
@@ -87,6 +85,9 @@ if [ $(uname -p) = 'arm' ]; then
     softwareupdate --install-rosetta --agree-to-license
 fi
 
+# Install any software updates currently available
+softwareupdate --install --all
+
 set -x
 
 # ====================
@@ -99,14 +100,10 @@ set -x
 - Security & Privacy
 -- General
 --- Require password ... = immediately
--- FileVault
---- Turn On
 -- Privacy
 --- Location Services
 ---- System Services > Details...
 ----- Allow [Find My Mac] to determine your location = on
-
-- Software Update
 
 - Network
 -- Delete Thunderbolt Bridge
@@ -236,6 +233,9 @@ sudo dsimport "$RECORD" /Local/Default M
 
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
 sudo chsh -s /bin/bash $(logname)
+
+# Security & Privacy > FileVault > Turn On FileVault (TODO test)
+sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
 # [12.6] Security & Privacy > Firewall > Turn On Firewall
 sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
