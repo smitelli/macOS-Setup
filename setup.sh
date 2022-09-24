@@ -6,6 +6,9 @@
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
 # TODO touch bar
+# TODO TouchID sudo https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L184
+# TODO FDE https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L227
+# TODO SW update https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L377
 
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
@@ -91,9 +94,6 @@ set -x
 # ====================
 
 <<COMMENT
-- General
--- Default web browser
-
 - Internet Accounts
 
 - Security & Privacy
@@ -238,7 +238,8 @@ sudo dsimport "$RECORD" /Local/Default M
 sudo chsh -s /bin/bash $(logname)
 
 # [12.6] Security & Privacy > Firewall > Turn On Firewall
-sudo defaults write /Library/Preferences/com.apple.alf.plist globalstate -int '1'
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
 
 # [12.5] Security & Privacy > Privacy > Apple Advertising > Personalized Ads = off
 defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool 'false'
@@ -259,8 +260,9 @@ defaults write -g InitialKeyRepeat -int '25'
 # [12.5] Keyboard > Keyboard > Press fn/Globe key to = Do Nothing
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
-# Keyboard > Text > Remove "omw" replacement (TODO keeps coming back)
+# Keyboard > Text > Remove "omw" replacement (TODO test)
 defaults write -g NSUserDictionaryReplacementItems '()'
+defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShortcutWasImported_CK -bool 'true'
 
 # [12.5] Keyboard > Text > Correct spelling automatically = off
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool 'false'
@@ -355,6 +357,10 @@ defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
+
+# [12.6] UNDOCUMENTED > Add owner message (max 3 lines) to login window
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
+    "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
 
 # ====================
 # Widgets
@@ -748,7 +754,7 @@ dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 # Clean up
 # ====================
 
-# Remove Zsh stuff that isn't going to be used anymore (TODO test)
+# Remove Zsh stuff that isn't going to be used anymore
 rm -rf "${HOME}"/.zsh_{history,sessions}
 
 # ====================
