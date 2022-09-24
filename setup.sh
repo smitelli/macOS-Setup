@@ -5,8 +5,7 @@
 # find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
-# TODO touch bar
-# TODO TouchID sudo https://github.com/MikeMcQuaid/strap/blob/master/bin/strap.sh#L184
+# TODO touch bar elements
 
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
@@ -361,6 +360,21 @@ defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
 # [12.6] UNDOCUMENTED > Add owner message (max 3 lines) to login window
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
     "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
+
+# UNDOCUMENTED > Enable TouchID for sudo (TODO test)
+# https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
+if ls /usr/lib/pam | grep -q pam_tid.so; then
+    PAM_FILE=/etc/pam.d/sudo
+    FIND_LINE='# sudo: auth account password session'
+    if grep -q pam_tid.so "$PAM_FILE"; then
+        echo 'SKIPPED: sudo via TouchID is already enabled'
+    elif ! head -n1 "$PAM_FILE" | grep -q "$FIND_LINE"; then
+        echo 'ERROR: PAM file does not start with the expected line'
+    else
+        APPEND_LINE='auth       sufficient     pam_tid.so'
+        sudo sed -e -i '' "s/$FIND_LINE/$FIND_LINE\n$APPEND_LINE/" "$PAM_FILE"
+    fi
+fi
 
 # ====================
 # Widgets
