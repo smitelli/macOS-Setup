@@ -6,7 +6,6 @@
 # F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
 
 # TODO touch bar
-# TODO download user pics
 
 # External customizations
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
@@ -54,7 +53,10 @@ curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil
 sudo installer -verboseR -pkg "$PKG" -target /
 
 # Install Consolas font family system-wide
-curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/{consola,consolab,consolai,consolaz}.ttf' -o '/Library/Fonts/#1.ttf'
+curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/consola{,b,i,z}.ttf' -o '/Library/Fonts/#1.ttf'
+
+# Install user profile and background banner images
+curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/profile{,-bg}.jpg' -o '${HOME}/Pictures/#1.jpg'
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC=$(mktemp)
@@ -331,6 +333,9 @@ defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool
 # TODO defaults write MobileMeAccounts Accounts '(...)'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+# UNDOCUMENTED > Disable "Tips" service
+launchctl disable "gui/$(id -u)/com.apple.tipsd"
 
 # UNDOCUMENTED > Expand save dialogs by default
 defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
@@ -720,13 +725,13 @@ hdiutil detach /Volumes/Firefox
 brew install keepassxc sublime-text vlc
 
 dockutil --add '/Applications/Firefox.app'
-dockutil --add '/Applications/Utilities/Terminal.app'
+dockutil --add '/System/Applications/Utilities/Terminal.app'
 dockutil --add '/Applications/Sublime Text.app'
 dockutil --add '/Applications/KeePassXC.app'
 dockutil --add '/Applications/VLC.app'
 dockutil --add '/Applications/Calculator.app'
-dockutil --add '/Applications/Utilities/Screenshot.app'
-dockutil --add '/Applications/Utilities/Activity Monitor.app'
+dockutil --add '/System/Applications/Utilities/Screenshot.app'
+dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 
 # ====================
 # Hope real hard that it all worked
