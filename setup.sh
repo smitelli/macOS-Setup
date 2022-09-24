@@ -36,12 +36,15 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
 PATH="$PATH:/usr/libexec"
 
+# Try to hit as many paths as possible to satisfy TCC/PPPC prompts upfront
+find "$HOME" > /dev/null
+
 # ====================
 # Installations
 # ====================
 
-# Install Homebrew
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Homebrew (non-interactively)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" < /dev/null
 
 # Install utilities that are required for this script
 brew install git mysides stow
@@ -227,7 +230,7 @@ dscl . -delete "/Users/$(logname)" Picture
 dscl . -delete "/Users/$(logname)" JPEGPhoto
 RECORD="$(mktemp)"
 echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:RecordName externalbinary:dsAttrTypeStandard:JPEGPhoto\n$(logname):${HOME}/Pictures/profile.jpg" > "$RECORD"
-dsimport "$RECORD" /Local/Default M
+sudo dsimport "$RECORD" /Local/Default M
 
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
 sudo chsh -s /bin/bash $(logname)
@@ -467,6 +470,8 @@ defaults delete com.apple.dock.extra || true  # [12.5] doesn't exist on fresh in
 defaults write com.apple.dock persistent-apps '()'
 defaults write com.apple.dock persistent-others '()'
 defaults write com.apple.dock recent-apps '()'
+
+killall Dock
 
 # ====================
 # Calculator
