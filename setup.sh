@@ -226,7 +226,7 @@ defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
 dscl . -delete "/Users/$(logname)" Picture
 dscl . -delete "/Users/$(logname)" JPEGPhoto
 RECORD="$(mktemp)"
-echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:RecordName base64:dsAttrTypeStandard:JPEGPhoto\n$(logname):${HOME}/Pictures/profile.jpg" > "$RECORD"
+echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:RecordName externalbinary:dsAttrTypeStandard:JPEGPhoto\n$(logname):${HOME}/Pictures/profile.jpg" > "$RECORD"
 dsimport "$RECORD" /Local/Default M
 
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
