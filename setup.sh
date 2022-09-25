@@ -94,7 +94,11 @@ set -x
 # ====================
 
 <<COMMENT
+- Notifications & Focus
+-- Focus (gets odd when Apple ID is set up)
+
 - Internet Accounts
+-- (Apple ID accounts)
 
 - Security & Privacy
 -- General
@@ -109,10 +113,14 @@ set -x
 
 - Touch ID
 -- Add at least 2 index fingers
+-- Enable for [all]
 
 - Apple ID
 -- iCloud
 --- Allow Find My Mac
+
+contacts card
+dictation is different depending on touch bar presence
 COMMENT
 
 # [12.5] General > Appearance = Dark
@@ -202,6 +210,7 @@ defaults write com.apple.controlcenter '<dict>
     <key>NSStatusItem Visible FocusModes</key>
     <false/>
 </dict>'
+killall ControlCenter
 
 # [12.5] Notifications & Focus > Notifications > Allow notifications when the display is sleeping = on
 PLIST='<?xml version="1.0" encoding="UTF-8"?>
@@ -233,6 +242,11 @@ sudo dsimport "$RECORD" /Local/Default M
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
 sudo chsh -s /bin/bash $(logname)
 
+# [12.6] Security & Privacy > General > Show a message when the screen is locked = on
+# [12.6] Security & Privacy > General > Set Lock Message...
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
+    "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
+
 # Security & Privacy > FileVault > Turn On FileVault (TODO test)
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
@@ -260,8 +274,9 @@ defaults write -g InitialKeyRepeat -int '25'
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
 # Keyboard > Text > Remove "omw" replacement (TODO test)
-defaults write -g NSUserDictionaryReplacementItems '()'
+defaults write com.apple.textInput.keyboardServices.textReplacement KSDidPushMigrationStatusOnce-2 -bool 'true'
 defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShortcutWasImported_CK -bool 'true'
+defaults write -g NSUserDictionaryReplacementItems '()'
 
 # [12.5] Keyboard > Text > Correct spelling automatically = off
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool 'false'
@@ -356,10 +371,6 @@ defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
-
-# [12.6] UNDOCUMENTED > Add owner message (max 3 lines) to login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
-    "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
 
 # UNDOCUMENTED > Enable TouchID for sudo (TODO test)
 # https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
