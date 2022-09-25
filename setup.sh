@@ -36,11 +36,15 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
 PATH="$PATH:/usr/libexec"
 
-# Try to hit as many paths as possible to satisfy TCC/PPPC prompts upfront
+# HACK: Try to hit as many paths as possible to satisfy TCC/PPPC prompts upfront
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
-# HACK: Do this first to get another permission prompt out of the way early.
+# HACK: Do this early since it requires interactive input.
+# [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
+sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
+
+# HACK: Do this early to get another permission prompt out of the way.
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop
 osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
@@ -181,7 +185,7 @@ defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
 # [12.5] Dock & Menu Bar > Wi-Fi > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Battery > Show in Menu Bar = on
-# [12.5] Order = [focus] [display] [battery] [wi-fi] [sound] [bento] [clock] (TODO bugged)
+# [12.6] Order = [focus] [display] [battery] [wi-fi] [sound] [bento] [clock]
 defaults write com.apple.controlcenter '<dict>
     <key>NSStatusItem Preferred Position BentoBox</key>
     <real>128</real>
@@ -231,7 +235,7 @@ PLIST='<?xml version="1.0" encoding="UTF-8"?>
 </plist>'
 defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
 
-# Users & Groups > [self] > Edit profile picture
+# [12.6] Users & Groups > [self] > Edit profile picture
 # Cherry-picked from https://apple.stackexchange.com/a/432510
 dscl . -delete "/Users/$(logname)" Picture
 dscl . -delete "/Users/$(logname)" JPEGPhoto
@@ -246,9 +250,6 @@ sudo chsh -s /bin/bash $(logname)
 # [12.6] Security & Privacy > General > Set Lock Message...
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
     "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
-
-# Security & Privacy > FileVault > Turn On FileVault (TODO test)
-sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
 # [12.6] Security & Privacy > Firewall > Turn On Firewall
 sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
@@ -273,7 +274,7 @@ defaults write -g InitialKeyRepeat -int '25'
 # [12.5] Keyboard > Keyboard > Press fn/Globe key to = Do Nothing
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
-# Keyboard > Text > Remove "omw" replacement (TODO test)
+# Keyboard > Text > Remove "omw" replacement (TODO bugged)
 defaults write com.apple.textInput.keyboardServices.textReplacement KSDidPushMigrationStatusOnce-2 -bool 'true'
 defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShortcutWasImported_CK -bool 'true'
 defaults write -g NSUserDictionaryReplacementItems '()'
@@ -372,7 +373,7 @@ defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
 
-# UNDOCUMENTED > Enable TouchID for sudo (TODO test)
+# UNDOCUMENTED > Enable TouchID for sudo (TODO didn't work)
 # https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
 if ls /usr/lib/pam | grep -q pam_tid.so; then
     PAM_FILE=/etc/pam.d/sudo
@@ -440,8 +441,8 @@ defaults write com.apple.finder _FXSortFoldersFirst -bool 'true'
 # [12.5] Preferences > Advanced > When performing a search = Search the Current Folder
 defaults write com.apple.finder FXDefaultSearchScope -string 'SCcf'
 
-# File > Get Info > Expand General, More Info, Name & Extension, Comments,
-# Open with, Preview, Sharing & Permissions.
+# [12.6] File > Get Info > Expand General, More Info, Name & Extension, Comments,
+#        Open with, Preview, Sharing & Permissions.
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
     General -bool 'true' \
     MetaData -bool 'true' \
@@ -560,14 +561,14 @@ defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
 # Screenshot
 # ====================
 
-# Save screenshots to the clipboard
+# [12.6] Save screenshots to the clipboard
 defaults write com.apple.screencapture target -string 'clipboard'
 
 # ====================
 # Terminal
 # ====================
 
-# Install "Basic Custom" profile
+# [12.5] Install "Basic Custom" profile
 PROFILE_NAME='Basic Custom'
 BGCOLOR="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
@@ -734,13 +735,13 @@ defaults write com.apple.Terminal 'Window Settings' -dict-add "$PROFILE_NAME" "<
     $(_make_bplist "$FONT")
 </dict>"
 
-# Preferences > General > On startup, open new window with profile = [profile]
+# [12.5] Preferences > General > On startup, open new window with profile = [profile]
 defaults write com.apple.Terminal 'Startup Window Settings' -string "$PROFILE_NAME"
 
-# Preferences > Profiles > Set [profile] as Default
+# [12.5] Preferences > Profiles > Set [profile] as Default
 defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NAME"
 
-# View > Hide Marks
+# [12.6] View > Hide Marks
 defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 
 # ====================
@@ -766,7 +767,7 @@ xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
 dockutil --add '/Applications/Sublime Text.app'
 xattr -dr com.apple.quarantine '/Applications/KeePassXC.app'
 dockutil --add '/Applications/KeePassXC.app'
-xattr -dr 'com.apple.quarantine /Applications/VLC.app'
+xattr -dr com.apple.quarantine '/Applications/VLC.app'
 dockutil --add '/Applications/VLC.app'
 dockutil --add '/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
