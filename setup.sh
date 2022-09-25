@@ -7,16 +7,11 @@
 
 # TODO touch bar elements
 
-# External customizations
-SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
-CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
-
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
 # Returns a string like "<data>AA...A=</data>".
 _make_bplist() {
     local PLIST=$(mktemp)
-
     echo "$1" > "$PLIST"
     plutil -convert binary1 "$PLIST"
     echo "<data>$(base64 "$PLIST")</data>"
@@ -27,24 +22,51 @@ _make_bplist() {
 # Initialization
 # ====================
 
+# External parameters
+SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
+CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
+
+# Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
+PATH="$PATH:/usr/libexec"
+
 # Ask for the administrator password at the very beginning...
 sudo -v
 
 # ... and refresh it every 60 seconds until the script exits.
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
-PATH="$PATH:/usr/libexec"
+# ====================
+# Early interactive stuff
+#
+# Everything in here pops up a TCC/PPPC warning, or requires the user (not sudo)
+# password to be input. Do all of these early, even though they might logically
+# fit better elsewhere in the script, to get all of the interactivity out of the
+# way as early as possible.
+# ====================
 
-# HACK: Try to hit as many paths as possible to satisfy TCC/PPPC prompts upfront
+# Try to hit as many paths as possible to satisfy prompts within $HOME
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
-# HACK: Do this early since it requires interactive input.
+# UNDOCUMENTED > Enable TouchID for sudo (TODO test)
+# https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
+if ls /usr/lib/pam | grep -q pam_tid.so; then
+    PAM_FILE=/etc/pam.d/sudo
+    FIND_LINE='# sudo: auth account password session'
+    if grep -q pam_tid.so "$PAM_FILE"; then
+        echo "SKIPPED: TouchID is already enabled in ${PAM_FILE}."
+    elif ! head -n1 "$PAM_FILE" | grep -q "$FIND_LINE"; then
+        echo "ERROR: ${PAM_FILE} does not start with the expected line"
+    else
+        APPEND_LINE='auth       sufficient     pam_tid.so'
+        sudo sed -i '' -e "s/$FIND_LINE/$FIND_LINE\n$APPEND_LINE/" "$PAM_FILE"
+        echo "OK: TouchID enabled in ${PAM_FILE}."
+    fi
+fi
+
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
-# HACK: Do this early to get another permission prompt out of the way.
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop
 osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
@@ -372,21 +394,6 @@ defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
-
-# UNDOCUMENTED > Enable TouchID for sudo (TODO didn't work)
-# https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
-if ls /usr/lib/pam | grep -q pam_tid.so; then
-    PAM_FILE=/etc/pam.d/sudo
-    FIND_LINE='# sudo: auth account password session'
-    if grep -q pam_tid.so "$PAM_FILE"; then
-        echo 'SKIPPED: sudo via TouchID is already enabled'
-    elif ! head -n1 "$PAM_FILE" | grep -q "$FIND_LINE"; then
-        echo 'ERROR: PAM file does not start with the expected line'
-    else
-        APPEND_LINE='auth       sufficient     pam_tid.so'
-        sudo sed -e -i '' "s/$FIND_LINE/$FIND_LINE\n$APPEND_LINE/" "$PAM_FILE"
-    fi
-fi
 
 # ====================
 # Widgets
