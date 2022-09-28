@@ -127,6 +127,8 @@ set -x
 -- (Apple ID accounts)
 
 - Security & Privacy
+-- Advanced
+--- Require an administrator password
 -- General
 --- Require password ... = immediately
 -- Privacy
@@ -134,8 +136,17 @@ set -x
 ---- System Services > Details...
 ----- Allow [Find My Mac] to determine your location = on
 
+- Software Update
+-- Advanced...
+--- Download new ... = off
+--- Install system data files ... = off
+
 - Network
 -- Delete Thunderbolt Bridge
+
+- Sound
+-- Sound Effects
+--- Play sound on startup = off
 
 - Touch ID
 -- Add at least 2 index fingers
@@ -296,7 +307,7 @@ defaults write -g InitialKeyRepeat -int '25'
 # [12.5] Keyboard > Keyboard > Press fn/Globe key to = Do Nothing
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
-# Keyboard > Keyboard > Customize Control Strip (TODO test)
+# [12.6] Keyboard > Keyboard > Customize Control Strip
 defaults write com.apple.controlstrip FullCustomized '<array>
     <string>com.apple.system.group.brightness</string>
     <string>com.apple.system.mission-control</string>
@@ -326,6 +337,9 @@ defaults write -g NSAutomaticCapitalizationEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Add period with double-space = off
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
+
+# Keyboard > Text > Touch Bar typing suggestions = off (TODO test)
+defaults write -g NSAutomaticTextCompletionEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Use smart quotes and dashes = off
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool 'false'
@@ -485,7 +499,7 @@ PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${
 PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 
-echo '0.0.0.0     iprofiles.apple.com' | sudo tee -a /etc/hosts
+echo '0.0.0.0         iprofiles.apple.com' | sudo tee -a /etc/hosts
 sudo profiles remove -all -forced
 
 # UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
