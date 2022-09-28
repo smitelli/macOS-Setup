@@ -296,6 +296,22 @@ defaults write -g InitialKeyRepeat -int '25'
 # [12.5] Keyboard > Keyboard > Press fn/Globe key to = Do Nothing
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
+# Keyboard > Keyboard > Customize Control Strip (TODO test)
+defaults write com.apple.controlstrip FullCustomized '<array>
+    <string>com.apple.system.group.brightness</string>
+    <string>com.apple.system.mission-control</string>
+    <string>com.apple.system.launchpad</string>
+    <string>com.apple.system.group.keyboard-brightness</string>
+    <string>com.apple.system.group.media</string>
+    <string>com.apple.system.group.volume</string>
+</array>'
+defaults write com.apple.controlstrip MiniCustomized '<array>
+    <string>com.apple.system.brightness</string>
+    <string>com.apple.system.volume</string>
+    <string>com.apple.system.mute</string>
+    <string>com.apple.system.screen-lock</string>
+</array>'
+
 # Keyboard > Text > Remove "omw" replacement (TODO bugged)
 defaults write com.apple.textInput.keyboardServices.textReplacement KSDidPushMigrationStatusOnce-2 -bool 'true'
 defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShortcutWasImported_CK -bool 'true'
@@ -468,6 +484,9 @@ PlistBuddy -c 'Set :DesktopViewSettings:IconViewSettings:arrangeBy name' "${HOME
 PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
+
+echo '0.0.0.0     iprofiles.apple.com' | sudo tee -a /etc/hosts
+sudo profiles remove -all -forced
 
 # UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
 defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
