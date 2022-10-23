@@ -1,12 +1,5 @@
 #!/bin/bash -e
 
-# defaults read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults read)
-# defaults -currentHost read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults -currentHost read)
-# find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
-# F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
-
-# TODO touch bar elements
-
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
 # Returns a string like "<data>AA...A=</data>".
@@ -25,6 +18,7 @@ _make_bplist() {
 # External parameters
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
+INCLUDE_WORKTOOLS="${INCLUDE_WORKTOOLS:-false}"
 
 # Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
 PATH="$PATH:/usr/libexec"
@@ -48,7 +42,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
-# UNDOCUMENTED > Enable TouchID for sudo (TODO test)
+# [12.6] UNDOCUMENTED > Enable TouchID for sudo
 # https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
 if ls /usr/lib/pam | grep -q pam_tid.so; then
     PAM_FILE=/etc/pam.d/sudo
@@ -67,7 +61,7 @@ fi
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
-# [12.6] System Preferences > Desktop & Screen Saver > Desktop
+# [12.6] System Preferences > Desktop & Screen Saver > Desktop = Black
 osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
 # ====================
@@ -103,9 +97,12 @@ rm -rf "${HOME}/.scottfiles"
 git clone https://github.com/smitelli/scottfiles.git "${HOME}/.scottfiles"
 pushd "${HOME}/.scottfiles"
 stow aliases bash colors converters editor gdb homebrew macos prompt tmux
+if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    stow worktools
+fi
 popd
 
-# Install Rosetta on Apple silicon machines only
+# Install Rosetta on Apple silicon machines only (TODO test)
 if [ $(uname -p) = 'arm' ]; then
     softwareupdate --install-rosetta --agree-to-license
 fi
@@ -118,47 +115,6 @@ set -x
 # ====================
 # System Preferences
 # ====================
-
-<<COMMENT
-- Notifications & Focus
--- Focus (gets odd when Apple ID is set up)
-
-- Internet Accounts
--- (Apple ID accounts)
-
-- Security & Privacy
--- Advanced
---- Require an administrator password
--- General
---- Require password ... = immediately
--- Privacy
---- Location Services
----- System Services > Details...
------ Allow [Find My Mac] to determine your location = on
-
-- Software Update
--- Advanced...
---- Download new ... = off
---- Install system data files ... = off
-
-- Network
--- Delete Thunderbolt Bridge
-
-- Sound
--- Sound Effects
---- Play sound on startup = off
-
-- Touch ID
--- Add at least 2 index fingers
--- Enable for [all]
-
-- Apple ID
--- iCloud
---- Allow Find My Mac
-
-contacts card
-dictation is different depending on touch bar presence
-COMMENT
 
 # [12.5] General > Appearance = Dark
 defaults write -g AppleInterfaceStyle -string 'Dark'
@@ -338,7 +294,7 @@ defaults write -g NSAutomaticCapitalizationEnabled -bool 'false'
 # [12.5] Keyboard > Text > Add period with double-space = off
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
 
-# Keyboard > Text > Touch Bar typing suggestions = off (TODO test)
+# [12.6] Keyboard > Text > Touch Bar typing suggestions = off
 defaults write -g NSAutomaticTextCompletionEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Use smart quotes and dashes = off
@@ -378,56 +334,11 @@ dscacheutil -flushcache
 # [12.5] Sharing > AirPlay Receiver = off
 defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
 
-# Apple ID > iCloud > Photos = off
-# Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > iCloud Drive = off
-# ... "MOBILE_DOCUMENTS" ... ; iCloudHomeShouldEnable = 0
-# defaults write MobileMeAccounts Accounts '(...)'
-# PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveEnabled 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
-# PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveFirstSyncDownComplete 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
-# Apple ID > iCloud > Contacts = off
-# ... "CONTACTS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Calendars = off
-# ... "CALENDAR" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Reminders = off
-# ... "REMINDERS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Notes = off
-# ... "NOTES" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Safari = off
-# ... "BOOKMARKS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > News = off
-# ... "NEWS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Stocks = off
-# ... "STOCKS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Home = off
-# ... "HOME" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Siri = off
-# ... "SIRI" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
-defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-
-# UNDOCUMENTED > Disable "Tips" service (TODO test)
-launchctl disable "gui/$(id -u)/com.apple.tipsd"
-
 # [12.6] UNDOCUMENTED > Expand save dialogs by default
 defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
-
-# ====================
-# Widgets
-# ====================
 
 # ====================
 # Finder
@@ -453,18 +364,6 @@ mysides add Downloads file://${HOME}/Downloads/
 mysides add Movies file://${HOME}/Movies/
 mysides add Music file://${HOME}/Music/
 mysides add Pictures file://${HOME}/Pictures/
-
-# Preferences > Sidebar > Show these items in the sidebar > Favorites
-# - AirDrop = on (sort at bottom of list)
-
-# Preferences > Sidebar > Show these items in the sidebar > iCloud
-# - iCloud Drive = off
-# - Shared = off
-
-# Preferences > Sidebar > Show these items in the sidebar > Locations
-# - [All except computer] = on
-
-# Grow sidebar to snap point
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 defaults write com.apple.finder ShowRecentTags -bool 'false'
@@ -499,19 +398,16 @@ PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${
 PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 
-echo '0.0.0.0         iprofiles.apple.com' | sudo tee -a /etc/hosts
-sudo profiles remove -all -forced
-
-# UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
+# [12.6] UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
 defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
 
 # [12.6] UNDOCUMENTED > Disable warning when changing file extensions
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
 
-# UNDOCUMENTED > Disable writing .DS_Store files on network shares
+# [12.6] UNDOCUMENTED > Disable writing .DS_Store files on network shares
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
 
-# UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
+# UNDOCUMENTED > Disable writing .DS_Store files on USB volumes (TODO test)
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool 'true'
 
 # [12.6] UNDOCUMENTED > Delay before showing tooltips (ms)
@@ -544,33 +440,6 @@ defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
 
 # [12.5] Preferences > Default Install Location = Computer
 defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
-
-# ====================
-# Mission Control
-# ====================
-
-<<COMMENT
-- Add Desktop
-18754a18755,18760
->                             },
->                                                         {
->                                 ManagedSpaceID = 11;
->                                 id64 = 11;
->                                 type = 0;
->                                 uuid = "EB57FCD1-3FEC-44F9-A41E-93027C8806EA";
-18781a18788
->                         24,
-18784d18790
-<                         24,
-18787a18794,18800
->                 },
->                                 {
->                     name = "EB57FCD1-3FEC-44F9-A41E-93027C8806EA";
->                     windows =                     (
->                         28,
->                         342
->                     );
-COMMENT
 
 # ====================
 # Disk Utility
@@ -785,7 +654,7 @@ defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NA
 defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 
 # ====================
-# Applications
+# Additional Applications
 # ====================
 
 # Having Homebrew try to manage (extremely auto-updating) Firefox weirds me out
@@ -797,10 +666,16 @@ hdiutil detach /Volumes/Firefox
 
 # Install common apps
 brew install keepassxc sublime-text vlc
+if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    brew install amazon-chime homebrew/cask/docker google-chrome zoom
+fi
 
 # Add preferred apps to the Dock in order. For downloaded ones, unquarantine in
 # the process.
-# [WORK] Google Chrome
+if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    dockutil --add '/Applications/Google Chrome.app'
+    xattr -dr com.apple.quarantine '/Applications/Google Chrome.app'
+fi
 dockutil --add '/Applications/Firefox.app'
 dockutil --add '/System/Applications/Utilities/Terminal.app'
 xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
@@ -809,12 +684,17 @@ xattr -dr com.apple.quarantine '/Applications/KeePassXC.app'
 dockutil --add '/Applications/KeePassXC.app'
 xattr -dr com.apple.quarantine '/Applications/VLC.app'
 dockutil --add '/Applications/VLC.app'
+if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    dockutil --add '/Applications/Amazon Chime.app'
+    xattr -dr com.apple.quarantine '/Applications/Amazon Chime.app'
+    dockutil --add '/Applications/Docker.app'
+    xattr -dr com.apple.quarantine '/Applications/Docker.app'
+    dockutil --add '/Applications/zoom.us.app'
+    xattr -dr com.apple.quarantine '/Applications/zoom.us.app'
+fi
 dockutil --add '/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
-# [WORK] Amazon Chime
-# [WORK] Docker
-# [WORK] zoom.us
 
 # ====================
 # Clean up
