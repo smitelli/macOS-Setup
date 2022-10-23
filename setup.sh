@@ -98,6 +98,7 @@ git clone https://github.com/smitelli/scottfiles.git "${HOME}/.scottfiles"
 pushd "${HOME}/.scottfiles"
 stow aliases bash colors converters editor gdb homebrew macos prompt tmux
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    mkdir -p "${HOME}/bin"
     stow worktools
 fi
 popd
