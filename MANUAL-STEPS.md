@@ -1,18 +1,17 @@
 # Manual Steps
 
-## From-Scratch Installation
+## From-Scratch Installation [12.6]
 
 - Language = English
-- Country or Region = United States
+- Select Your Country or Region = United States
 - Accessibility = Not Now
-- Configure Wi-Fi network
+- Select Your Wi-Fi Network = ...
 - Migration Assistant = Not Now
 - Agree to Terms and Conditions
 - Create a Computer Account
     + Full name = Scott Smitelli
     + Account name = ssmitelli
     + Password = ...
-    + Continue
 - Enable Location Services on this Mac = on
 - Analytics
     + Share Mac Analytics with Apple = off
