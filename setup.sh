@@ -255,6 +255,9 @@ defaults write com.apple.AdLib adprivacydSegmentInterval -string "$RANDOM"
 # [12.5] Sound > Output volume = 55%
 osascript -e 'set volume output volume 55'
 
+# Sound > Sound Effects > Play sound on startup = off (TODO)
+sudo nvram StartupMute=%01
+
 # [12.5] Sound > Input > Input volume = 75%
 osascript -e 'set volume input volume 75'
 
@@ -696,7 +699,7 @@ if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     dockutil --add '/Applications/zoom.us.app'
     xattr -dr com.apple.quarantine '/Applications/zoom.us.app'
 fi
-dockutil --add '/Applications/Calculator.app'
+dockutil --add '/System/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 
