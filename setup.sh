@@ -18,6 +18,7 @@ _make_bplist() {
 # External parameters
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
+INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
 INCLUDE_WORKTOOLS="${INCLUDE_WORKTOOLS:-false}"
 
 # Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
@@ -103,13 +104,15 @@ if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
 fi
 popd
 
-# Install Rosetta on Apple silicon machines only (TODO test)
-if [ $(uname -p) = 'arm' ]; then
-    softwareupdate --install-rosetta --agree-to-license
-fi
+if [ "$INCLUDE_SOFTWARE_UPDATE" = 'true' ]; then
+    # Install Rosetta on Apple silicon machines only (TODO test)
+    if [ $(uname -p) = 'arm' ]; then
+        softwareupdate --install-rosetta --agree-to-license
+    fi
 
-# Install any software updates currently available
-softwareupdate --install --all
+    # Install any software updates currently available
+    softwareupdate --install --all
+fi
 
 set -x
 
