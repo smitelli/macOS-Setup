@@ -705,10 +705,7 @@ dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 # TODO syntax-highlight doesn't coexist peacefully with these
 brew install qlcolorcode qlmarkdown qlstephen quicklook-json
 find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {} \;
-
-# I don't like this at all!
 xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
-open --hide '/Applications/QLMarkdown.app' && sleep 5
 
 # ====================
 # Clean up
