@@ -1,10 +1,12 @@
 #!/bin/bash -e
 
+SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
+
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
 # Returns a string like "<data>AA...A=</data>".
 _make_bplist() {
-    local PLIST=$(mktemp)
+    local PLIST="$(mktemp)"
     echo "$1" > "$PLIST"
     plutil -convert binary1 "$PLIST"
     echo "<data>$(base64 "$PLIST")</data>"
@@ -82,14 +84,14 @@ curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil
 sudo installer -verboseR -pkg "$PKG" -target /
 
 # Install Consolas font family system-wide
-curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/consola{,b,i,z}.ttf' -o '/Library/Fonts/consola#1.ttf'
+curl -fL "${SELF_URL}/data/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
 
 # Install user profile and background banner images
-curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/profile{,-bg}.jpg' -o "${HOME}/Pictures/profile#1.jpg"
+curl -fL "${SELF_URL}/data/profile{,-bg}.jpg" -o "${HOME}/Pictures/profile#1.jpg"
 
 # Install the After Dark Flying Toasters replica screen saver
-ZIPSRC=$(mktemp)
-curl -fL 'https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/data/adftss.zip' -o "$ZIPSRC"
+ZIPSRC="$(mktemp)"
+curl -fL "${SELF_URL}/data/adftss.zip" -o "$ZIPSRC"
 unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
 xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
 
@@ -106,7 +108,7 @@ popd
 
 if [ "$INCLUDE_SOFTWARE_UPDATE" = 'true' ]; then
     # Install Rosetta on Apple silicon machines only
-    if [ $(uname -p) = 'arm' ]; then
+    if [ "$(uname -p)" = 'arm' ]; then
         softwareupdate --install-rosetta --agree-to-license
     fi
 
@@ -237,7 +239,7 @@ echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:Record
 sudo dsimport "$RECORD" /Local/Default M
 
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
-sudo chsh -s /bin/bash $(logname)
+sudo chsh -s /bin/bash "$(logname)"
 
 # [12.6] Security & Privacy > General > Show a message when the screen is locked = on
 # [12.6] Security & Privacy > General > Set Lock Message...
@@ -364,13 +366,13 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Favorites
 mysides remove all
 mysides add "$(logname)" "file://${HOME}/"
-mysides add Applications file:///Applications/
-mysides add Desktop file://${HOME}/Desktop/
-mysides add Documents file://${HOME}/Documents/
-mysides add Downloads file://${HOME}/Downloads/
-mysides add Movies file://${HOME}/Movies/
-mysides add Music file://${HOME}/Music/
-mysides add Pictures file://${HOME}/Pictures/
+mysides add Applications 'file:///Applications/'
+mysides add Desktop "file://${HOME}/Desktop/"
+mysides add Documents "file://${HOME}/Documents/"
+mysides add Downloads "file://${HOME}/Downloads/"
+mysides add Movies "file://${HOME}/Movies/"
+mysides add Music "file://${HOME}/Music/"
+mysides add Pictures "file://${HOME}/Pictures/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 defaults write com.apple.finder ShowRecentTags -bool 'false'
@@ -400,7 +402,6 @@ defaults write com.apple.finder FXPreferredViewStyle -string 'clmv'
 
 # [12.5] View > Sort By = Name
 PlistBuddy -c 'Set :DesktopViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
-#PlistBuddy -c 'Set :FK_DefaultIconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
@@ -453,7 +454,7 @@ defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
 # ====================
 
 if [ "$CAPITALIZE_DISK" = 'unset' ]; then
-    VOLNAME=$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')
+    VOLNAME="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
     CAPITALIZE_DISK=$(python -c "print('true' if '${VOLNAME}'[0].isupper() else 'false')")
 fi
 
@@ -665,7 +666,7 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 # ====================
 
 # Having Homebrew try to manage (extremely auto-updating) Firefox weirds me out
-DMG=$(mktemp)
+DMG="$(mktemp)"
 curl -fL 'https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US' -o "$DMG"
 hdiutil attach "$DMG"
 cp -rf /Volumes/Firefox/Firefox.app /Applications/Firefox.app
