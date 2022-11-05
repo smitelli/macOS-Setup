@@ -704,6 +704,7 @@ dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 
 # Install (then unquarantine) some useful Quick Look plugins
+# TODO qlvideo would be nice but I can't figure out why it doesn't work
 # TODO syntax-highlight doesn't coexist peacefully with these
 brew install qlcolorcode qlmarkdown qlstephen quicklook-json
 find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {} \;
