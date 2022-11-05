@@ -665,15 +665,8 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 # Additional Applications
 # ====================
 
-# Having Homebrew try to manage (extremely auto-updating) Firefox weirds me out
-DMG="$(mktemp)"
-curl -fL 'https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US' -o "$DMG"
-hdiutil attach "$DMG"
-cp -rf /Volumes/Firefox/Firefox.app /Applications/Firefox.app
-hdiutil detach /Volumes/Firefox
-
 # Install common apps
-brew install keepassxc sublime-text vlc
+brew install firefox keepassxc sublime-text vlc
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     brew install amazon-chime homebrew/cask/docker google-chrome zoom
 fi
@@ -685,6 +678,7 @@ if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     xattr -dr com.apple.quarantine '/Applications/Google Chrome.app'
 fi
 dockutil --add '/Applications/Firefox.app'
+xattr -dr com.apple.quarantine '/Applications/Firefox.app'
 dockutil --add '/System/Applications/Utilities/Terminal.app'
 xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
 dockutil --add '/Applications/Sublime Text.app'
