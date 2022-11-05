@@ -255,7 +255,7 @@ defaults write com.apple.AdLib adprivacydSegmentInterval -string "$RANDOM"
 # [12.5] Sound > Output volume = 55%
 osascript -e 'set volume output volume 55'
 
-# Sound > Sound Effects > Play sound on startup = off (TODO)
+# [12.6] Sound > Sound Effects > Play sound on startup = off
 sudo nvram StartupMute=%01
 
 # [12.5] Sound > Input > Input volume = 75%
