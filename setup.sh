@@ -706,7 +706,7 @@ find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {
 
 # I don't like this at all!
 xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
-open --hide '/Applications/QLMarkdown.app'
+open --hide '/Applications/QLMarkdown.app' && sleep 5
 
 # ====================
 # Clean up
