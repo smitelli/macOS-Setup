@@ -6,11 +6,13 @@ SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
 # $1: Complete XML-readable plist document.
 # Returns a string like "<data>AA...A=</data>".
 _make_bplist() {
-    local PLIST="$(mktemp)"
-    echo "$1" > "$PLIST"
-    plutil -convert binary1 "$PLIST"
-    echo "<data>$(base64 "$PLIST")</data>"
-    rm -f "$PLIST"
+    local plist
+
+    plist="$(mktemp)"
+    echo "$1" > "$plist"
+    plutil -convert binary1 "$plist"
+    echo "<data>$(base64 "$plist")</data>"
+    rm -f "$plist"
 }
 
 # ====================
@@ -47,8 +49,8 @@ find "$HOME" > /dev/null 2>&1
 
 # [12.6] UNDOCUMENTED > Enable TouchID for sudo
 # https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
-if ls /usr/lib/pam | grep -q pam_tid.so; then
-    PAM_FILE=/etc/pam.d/sudo
+if ls /usr/lib/pam/pam_tid.so*; then
+    PAM_FILE='/etc/pam.d/sudo'
     FIND_LINE='# sudo: auth account password session'
     if grep -q pam_tid.so "$PAM_FILE"; then
         echo "SKIPPED: TouchID is already enabled in ${PAM_FILE}."
