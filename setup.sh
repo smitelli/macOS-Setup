@@ -345,6 +345,9 @@ dscacheutil -flushcache
 # [12.5] Sharing > AirPlay Receiver = off
 defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
 
+# Apple Menu > {Restart,Shut Down}... > Reopen windows when logging back in = off (TODO)
+defaults write com.apple.loginwindow TALLogoutSavesState -bool 'false'
+
 # [12.6] UNDOCUMENTED > Expand save dialogs by default
 defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 
