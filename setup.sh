@@ -105,7 +105,7 @@ fi
 popd
 
 if [ "$INCLUDE_SOFTWARE_UPDATE" = 'true' ]; then
-    # Install Rosetta on Apple silicon machines only (TODO test)
+    # Install Rosetta on Apple silicon machines only
     if [ $(uname -p) = 'arm' ]; then
         softwareupdate --install-rosetta --agree-to-license
     fi
@@ -414,7 +414,7 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
 # [12.6] UNDOCUMENTED > Disable writing .DS_Store files on network shares
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
 
-# UNDOCUMENTED > Disable writing .DS_Store files on USB volumes (TODO test)
+# [12.6] UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool 'true'
 
 # [12.6] UNDOCUMENTED > Delay before showing tooltips (ms)
