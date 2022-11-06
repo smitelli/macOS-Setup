@@ -676,34 +676,30 @@ if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     brew install --no-quarantine amazon-chime homebrew/cask/docker google-chrome zoom
 fi
 
-# Add preferred apps to the Dock in order
-if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
-    dockutil --add '/Applications/Google Chrome.app'
-fi
-dockutil --add '/Applications/Firefox.app'
-dockutil --add '/System/Applications/Utilities/Terminal.app'
-dockutil --add '/Applications/Sublime Text.app'
-dockutil --add '/Applications/KeePassXC.app'
-dockutil --add '/Applications/VLC.app'
-if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
-    dockutil --add '/Applications/Amazon Chime.app'
-    dockutil --add '/Applications/Docker.app'
-    dockutil --add '/Applications/zoom.us.app'
-fi
-dockutil --add '/System/Applications/Calculator.app'
-dockutil --add '/System/Applications/Utilities/Screenshot.app'
-dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
-
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
 # TODO syntax-highlight doesn't coexist peacefully with these
 brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
 
+# Add preferred apps to the Dock in order
+[ -e '/Applications/Google Chrome.app' ] &&  dockutil --add '/Applications/Google Chrome.app'
+dockutil --add '/Applications/Firefox.app'
+dockutil --add '/System/Applications/Utilities/Terminal.app'
+dockutil --add '/Applications/Sublime Text.app'
+dockutil --add '/Applications/KeePassXC.app'
+dockutil --add '/Applications/VLC.app'
+[ -e '/Applications/Amazon Chime.app' ] &&  dockutil --add '/Applications/Amazon Chime.app'
+[ -e '/Applications/Docker.app' ] &&  dockutil --add '/Applications/Docker.app'
+[ -e '/Applications/zoom.us.app' ] &&  dockutil --add '/Applications/zoom.us.app'
+dockutil --add '/System/Applications/Calculator.app'
+dockutil --add '/System/Applications/Utilities/Screenshot.app'
+dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
+
 # ====================
-# Amazon Chime (if included)
+# Amazon Chime (if installed)
 # ====================
 
-if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+if [ -e '/Applications/Amazon Chime.app' ]; then
     # First Run > Check for updates automatically? = Check Automatically (TODO)
     defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
     defaults write com.amazon.Amazon-Chime SUHasLaunchedBefore -bool 'true'
@@ -713,6 +709,7 @@ fi
 # KeePassXC
 # ====================
 
+# Install skeleton INI files to initialize configuration
 curl -fL --create-dirs "${SELF_URL}/data/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
 curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
 
@@ -732,7 +729,8 @@ defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
 defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
 
-open -g '/Applications/QLMarkdown.app' && sleep 10
+# Ugh...
+open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"' && sleep 5
 
 # ====================
 # Clean up
