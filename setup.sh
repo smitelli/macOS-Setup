@@ -345,7 +345,7 @@ dscacheutil -flushcache
 # [12.5] Sharing > AirPlay Receiver = off
 defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
 
-# Apple Menu > {Restart,Shut Down}... > Reopen windows when logging back in = off (TODO)
+# [12.6] Apple Menu > {Restart,Shut Down}... > Reopen windows when logging back in = off
 defaults write com.apple.loginwindow TALLogoutSavesState -bool 'false'
 
 # [12.6] UNDOCUMENTED > Expand save dialogs by default
@@ -700,7 +700,7 @@ dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 # ====================
 
 if [ -e '/Applications/Amazon Chime.app' ]; then
-    # First Run > Check for updates automatically? = Check Automatically (TODO)
+    # [4.39] First Run > Check for updates automatically? = Check Automatically
     defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
     defaults write com.amazon.Amazon-Chime SUHasLaunchedBefore -bool 'true'
 fi
@@ -717,7 +717,10 @@ curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Libra
 # VLC
 # ====================
 
-# First Run > Check for updates automatically? = Check Automatically (TODO)
+# First Run > Check for album art and metadata? > [don't care enough here] (TODO)
+defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+
+# [3.0.17] First Run > Check for updates automatically? = Check Automatically
 defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'true'
 defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 
@@ -725,11 +728,11 @@ defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 # QLMarkdown
 # ====================
 
-# First Run > Check for updates automatically? = Check Automatically (TODO)
+# [1.0] First Run > Check for updates automatically? = Check Automatically
 defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
 defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
 
-# Ugh...
+# [1.0] App must be started at least once to register its plugin (ugh)
 open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"' && sleep 5
 
 # ====================
@@ -743,4 +746,5 @@ rm -rf "${HOME}"/.zsh_{history,sessions}
 # Hope real hard that it all worked
 # ====================
 
-sudo shutdown -r now
+sudo shutdown -r +1
+sleep 55 && killall Terminal
