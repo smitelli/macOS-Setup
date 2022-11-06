@@ -671,44 +671,33 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 # ====================
 
 # Install common apps
-brew install firefox keepassxc sublime-text vlc
+brew install --no-quarantine firefox keepassxc sublime-text vlc
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
-    brew install amazon-chime homebrew/cask/docker google-chrome zoom
+    brew install --no-quarantine amazon-chime homebrew/cask/docker google-chrome zoom
 fi
 
-# Add preferred apps to the Dock in order. For downloaded ones, unquarantine in
-# the process.
+# Add preferred apps to the Dock in order
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     dockutil --add '/Applications/Google Chrome.app'
-    xattr -dr com.apple.quarantine '/Applications/Google Chrome.app'
 fi
 dockutil --add '/Applications/Firefox.app'
-xattr -dr com.apple.quarantine '/Applications/Firefox.app'
 dockutil --add '/System/Applications/Utilities/Terminal.app'
-xattr -dr com.apple.quarantine '/Applications/Sublime Text.app'
 dockutil --add '/Applications/Sublime Text.app'
-xattr -dr com.apple.quarantine '/Applications/KeePassXC.app'
 dockutil --add '/Applications/KeePassXC.app'
-xattr -dr com.apple.quarantine '/Applications/VLC.app'
 dockutil --add '/Applications/VLC.app'
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     dockutil --add '/Applications/Amazon Chime.app'
-    xattr -dr com.apple.quarantine '/Applications/Amazon Chime.app'
     dockutil --add '/Applications/Docker.app'
-    xattr -dr com.apple.quarantine '/Applications/Docker.app'
     dockutil --add '/Applications/zoom.us.app'
-    xattr -dr com.apple.quarantine '/Applications/zoom.us.app'
 fi
 dockutil --add '/System/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 
-# Install (then unquarantine) some useful Quick Look plugins
+# Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
 # TODO syntax-highlight doesn't coexist peacefully with these
-brew install qlcolorcode qlmarkdown qlstephen quicklook-json
-find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {} \;
-xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
+brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
 
 # ====================
 # Amazon Chime (if included)
