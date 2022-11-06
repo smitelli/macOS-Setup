@@ -718,7 +718,6 @@ if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     # First Run > Check for updates automatically? = Check Automatically (TODO)
     defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
     defaults write com.amazon.Amazon-Chime SUHasLaunchedBefore -bool 'true'
-    defaults write com.amazon.Amazon-Chime SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 fi
 
 # ====================
@@ -735,7 +734,6 @@ curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Libra
 # First Run > Check for updates automatically? = Check Automatically (TODO)
 defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'true'
 defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
-defaults write org.videolan.vlc SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
 # ====================
 # QLMarkdown
@@ -744,7 +742,8 @@ defaults write org.videolan.vlc SULastCheckTime -string "$(date -u '+%Y-%m-%d %H
 # First Run > Check for updates automatically? = Check Automatically (TODO)
 defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
 defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
-defaults write org.sbarex.QLMarkdown SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+
+open -g '/Applications/QLMarkdown.app' && sleep 10
 
 # ====================
 # Clean up
