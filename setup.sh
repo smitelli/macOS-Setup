@@ -711,6 +711,29 @@ find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {
 xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
 
 # ====================
+# KeePassXC
+# ====================
+
+mkdir -p "${HOME}/Library/Application Support/KeePassXC"
+INI="${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
+git config -f "$INI" General.ConfigVersion 2
+git config -f "$INI" General.UpdateCheckMessageShown true
+git config -f "$INI" GUI.CheckForUpdates false
+git config -f "$INI" GUI.HidePreviewPanel true
+git config -f "$INI" GUI.HideToolbar true
+
+# ====================
+# VLC
+# ====================
+
+# Preferences > Privacy / Network interaction > Automatically check for updates = off
+defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'false'
+
+# UNDOCUMENTED > Prevent first-run noise
+defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
+defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+
+# ====================
 # Clean up
 # ====================
 
