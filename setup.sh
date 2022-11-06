@@ -86,10 +86,10 @@ curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil
 sudo installer -verboseR -pkg "$PKG" -target /
 
 # Install Consolas font family system-wide
-curl -fL "${SELF_URL}/data/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
+curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
 
 # Install user profile and background banner images
-curl -fL "${SELF_URL}/data/profile{,-bg}.jpg" -o "${HOME}/Pictures/profile#1.jpg"
+curl -fL "${SELF_URL}/data/pictures/profile{,-bg}.jpg" -o "${HOME}/Pictures/profile#1.jpg"
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC="$(mktemp)"
