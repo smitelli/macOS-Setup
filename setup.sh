@@ -715,7 +715,7 @@ xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
 # ====================
 
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
-    # Check for updates automatically? = Check Automatically (TODO)
+    # First Run > Check for updates automatically? = Check Automatically (TODO)
     defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
 
     # UNDOCUMENTED > Prevent first-run noise (TODO)
@@ -740,6 +740,17 @@ defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'false'
 # [3.0.17] UNDOCUMENTED > Prevent first-run noise
 defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+
+# ====================
+# QLMarkdown
+# ====================
+
+# First Run > Check for updates automatically? = Check Automatically (TODO)
+defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
+
+# UNDOCUMENTED > Prevent first-run noise (TODO)
+defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
+defaults write org.sbarex.QLMarkdown SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
 # ====================
 # Clean up
