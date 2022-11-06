@@ -711,6 +711,19 @@ find "${HOME}/Library/QuickLook" -depth 1 -exec xattr -dr com.apple.quarantine {
 xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
 
 # ====================
+# Amazon Chime (if included)
+# ====================
+
+if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
+    # Check for updates automatically? = Check Automatically (TODO)
+    defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
+
+    # UNDOCUMENTED > Prevent first-run noise (TODO)
+    defaults write com.amazon.Amazon-Chime SUHasLaunchedBefore -bool 'true'
+    defaults write com.amazon.Amazon-Chime SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+fi
+
+# ====================
 # KeePassXC
 # ====================
 
