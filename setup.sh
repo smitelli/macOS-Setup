@@ -460,7 +460,7 @@ defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
 
 if [ "$CAPITALIZE_DISK" = 'unset' ]; then
     VOLNAME="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
-    CAPITALIZE_DISK=$(python -c "print('true' if '${VOLNAME}'[0].isupper() else 'false')")
+    CAPITALIZE_DISK=$(python3 -c "print('true' if '${VOLNAME}'[0].isupper() else 'false')")
 fi
 
 if [ "$CAPITALIZE_DISK" = 'true' ]; then
