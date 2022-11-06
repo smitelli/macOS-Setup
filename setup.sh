@@ -721,10 +721,10 @@ curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Libra
 # VLC
 # ====================
 
-# Preferences > Privacy / Network interaction > Automatically check for updates = off
+# [3.0.17] Preferences > Privacy / Network interaction > Automatically check for updates = off
 defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'false'
 
-# UNDOCUMENTED > Prevent first-run noise
+# [3.0.17] UNDOCUMENTED > Prevent first-run noise
 defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
