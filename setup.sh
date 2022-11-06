@@ -714,13 +714,8 @@ xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
 # KeePassXC
 # ====================
 
-mkdir -p "${HOME}/Library/Application Support/KeePassXC"
-INI="${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
-git config -f "$INI" General.ConfigVersion 2
-git config -f "$INI" General.UpdateCheckMessageShown true
-git config -f "$INI" GUI.CheckForUpdates false
-git config -f "$INI" GUI.HidePreviewPanel true
-git config -f "$INI" GUI.HideToolbar true
+curl -fL --create-dirs "${SELF_URL}/data/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
+curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
 
 # ====================
 # VLC
