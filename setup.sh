@@ -717,8 +717,6 @@ xattr -dr com.apple.quarantine '/Applications/QLMarkdown.app'
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     # First Run > Check for updates automatically? = Check Automatically (TODO)
     defaults write com.amazon.Amazon-Chime SUEnableAutomaticChecks -bool 'true'
-
-    # UNDOCUMENTED > Prevent first-run noise (TODO)
     defaults write com.amazon.Amazon-Chime SUHasLaunchedBefore -bool 'true'
     defaults write com.amazon.Amazon-Chime SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 fi
@@ -734,12 +732,10 @@ curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Libra
 # VLC
 # ====================
 
-# [3.0.17] Preferences > Privacy / Network interaction > Automatically check for updates = off
-defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'false'
-
-# [3.0.17] UNDOCUMENTED > Prevent first-run noise
+# First Run > Check for updates automatically? = Check Automatically (TODO)
+defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'true'
 defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
-defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+defaults write org.videolan.vlc SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
 # ====================
 # QLMarkdown
@@ -747,8 +743,6 @@ defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:
 
 # First Run > Check for updates automatically? = Check Automatically (TODO)
 defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
-
-# UNDOCUMENTED > Prevent first-run noise (TODO)
 defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
 defaults write org.sbarex.QLMarkdown SULastCheckTime -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
