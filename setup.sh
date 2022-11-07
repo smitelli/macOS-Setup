@@ -710,8 +710,8 @@ fi
 # ====================
 
 # Install skeleton INI files to initialize configuration
-curl -fL --create-dirs "${SELF_URL}/data/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
-curl -fL --create-dirs "${SELF_URL}/data/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
+curl -fL --create-dirs "${SELF_URL}/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
+curl -fL --create-dirs "${SELF_URL}/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
 
 # ====================
 # VLC
@@ -746,5 +746,5 @@ rm -rf "${HOME}"/.zsh_{history,sessions}
 # Hope real hard that it all worked
 # ====================
 
-# Shutdown in one minute to allow the full terminal session to flush out
 sudo shutdown -r +1
+sleep 50 && killall Terminal

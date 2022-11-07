@@ -68,7 +68,6 @@
 
 contacts card
 dictation is different depending on touch bar presence
-open QLMarkdown.app at least once
 
 # Apple ID > iCloud > Photos = off
 # Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
