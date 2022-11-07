@@ -746,5 +746,5 @@ rm -rf "${HOME}"/.zsh_{history,sessions}
 # Hope real hard that it all worked
 # ====================
 
+# Delay shutdown to ensure entire session flushes out
 sudo shutdown -r +1
-sleep 50 && killall Terminal
