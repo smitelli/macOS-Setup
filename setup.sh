@@ -15,8 +15,11 @@ echo    "INCLUDE_WORKTOOLS:       ${INCLUDE_WORKTOOLS}"
 echo -n "CAPITALIZE_DISK:         ${CAPITALIZE_DISK}"
 
 if [ "$CAPITALIZE_DISK" = 'unset' ]; then
+    # If the existing volume name starts with a capital, default CAPITALIZE_DISK
+    # to true. Otherwise it defaults to false.
     vol="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
-    CAPITALIZE_DISK=$(python3 -c "print('true' if '${vol}'[0].isupper() else 'false')")
+    volupper="$(tr '[:lower:]' '[:upper:]' <<< ${vol:0:1})${vol:1}"
+    [ "$vol" = "$volupper" ] && CAPITALIZE_DISK='true' || CAPITALIZE_DISK='false'
     echo " -> ${CAPITALIZE_DISK}"
 else
     echo ''
