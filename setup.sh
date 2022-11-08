@@ -57,6 +57,9 @@ sudo -v
 # ... and refresh it every 60 seconds until the script exits.
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# If we don't have sudo at this point, no reason to continue
+sudo -n true || exit
+
 # ====================
 # Early interactive stuff
 #
