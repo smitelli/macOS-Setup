@@ -1,25 +1,28 @@
 # Manual Steps
 
-## From-Scratch Installation [12.6]
+## From-Scratch Installation (12.6)
 
-- Language = English
-- Select Your Country or Region = United States
+- Language = **English**
+- Select Your Country or Region = **United States**
 - Accessibility = Not Now
 - Select Your Wi-Fi Network = ...
 - Migration Assistant = Not Now
-- Agree to Terms and Conditions
+- Sign In with Your Apple ID = Set Up Later; Skip
+- Terms and Conditions = Agree; Agree
 - Create a Computer Account
-    + Full name = Scott Smitelli
-    + Account name = ssmitelli
+    + Full name = **Scott Smitelli**
+    + Account name = **ssmitelli**
     + Password = ...
-- Enable Location Services on this Mac = on
+- Enable Location Services on this Mac = **on**
 - Analytics
-    + Share Mac Analytics with Apple = off
-    + Share crash and usage data with app developers = off
+    + Share Mac Analytics with Apple = **off**
+    + Share crash and usage data with app developers = **off**
 - Screen Time = Set Up Later
-- Enable Ask Siri = off
-- Touch ID = Set Up Touch ID Later
+- Enable Ask Siri = **off**
+- Touch ID = Set Up Touch ID Later; Continue
 - Choose Your Look = Dark
+
+Once at the desktop, open Terminal.app and follow instructions from the README.
 
 ## Post-Bootstrap Settings
 
