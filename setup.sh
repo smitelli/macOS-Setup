@@ -1,6 +1,33 @@
 #!/bin/bash -e
 
-SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
+# ====================
+# Parse environment
+# ====================
+
+SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
+INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
+INCLUDE_WORKTOOLS="${INCLUDE_WORKTOOLS:-false}"
+CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
+
+echo    "SET_HOSTNAME:            ${SET_HOSTNAME}"
+echo    "INCLUDE_SOFTWARE_UPDATE: ${INCLUDE_SOFTWARE_UPDATE}"
+echo    "INCLUDE_WORKTOOLS:       ${INCLUDE_WORKTOOLS}"
+echo -n "CAPITALIZE_DISK:         ${CAPITALIZE_DISK}"
+
+if [ "$CAPITALIZE_DISK" = 'unset' ]; then
+    vol="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
+    CAPITALIZE_DISK=$(python3 -c "print('true' if '${vol}'[0].isupper() else 'false')")
+    echo " -> ${CAPITALIZE_DISK}"
+else
+    echo ''
+fi
+
+DISKNAME="$SET_HOSTNAME"
+if [ "$CAPITALIZE_DISK" = 'true' ]; then
+    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DISKNAME:0:1})${DISKNAME:1}"
+fi
+
+echo "Final Disk Name:         ${DISKNAME}"
 
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
@@ -19,11 +46,7 @@ _make_bplist() {
 # Initialization
 # ====================
 
-# External parameters
-SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
-CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
-INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
-INCLUDE_WORKTOOLS="${INCLUDE_WORKTOOLS:-false}"
+SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
 
 # Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
 PATH="$PATH:/usr/libexec"
@@ -458,20 +481,9 @@ defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
 # Disk Utility
 # ====================
 
-if [ "$CAPITALIZE_DISK" = 'unset' ]; then
-    VOLNAME="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
-    CAPITALIZE_DISK=$(python3 -c "print('true' if '${VOLNAME}'[0].isupper() else 'false')")
-fi
-
-if [ "$CAPITALIZE_DISK" = 'true' ]; then
-    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${SET_HOSTNAME:0:1})${SET_HOSTNAME:1}"
-else
-    DISKNAME="$SET_HOSTNAME"
-fi
-
 # [12.5] Rename APFS disks to "[Hostname]" and "[Hostname] Data"
 diskutil rename / "$DISKNAME"
-diskutil rename /System/Volumes/Data "$DISKNAME Data"
+diskutil rename /System/Volumes/Data "${DISKNAME} Data"
 
 # [12.5] View > Show All Devices
 defaults write com.apple.DiskUtility SidebarShowAllDevices -bool 'true'
