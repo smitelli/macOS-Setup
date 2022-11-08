@@ -18,7 +18,7 @@ if [ "$CAPITALIZE_DISK" = 'unset' ]; then
     # If the existing volume name starts with a capital, default CAPITALIZE_DISK
     # to true. Otherwise it defaults to false.
     vol="$(diskutil info / | sed -nE 's/^.*Volume Name: *(.+)$/\1/p')"
-    volupper="$(tr '[:lower:]' '[:upper:]' <<< ${vol:0:1})${vol:1}"
+    volupper="$(tr '[:lower:]' '[:upper:]' <<< "${vol:0:1}")${vol:1}"
     [ "$vol" = "$volupper" ] && CAPITALIZE_DISK='true' || CAPITALIZE_DISK='false'
     echo " -> ${CAPITALIZE_DISK}"
 else
@@ -27,7 +27,7 @@ fi
 
 DISKNAME="$SET_HOSTNAME"
 if [ "$CAPITALIZE_DISK" = 'true' ]; then
-    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DISKNAME:0:1})${DISKNAME:1}"
+    DISKNAME="$(tr '[:lower:]' '[:upper:]' <<< "${DISKNAME:0:1}")${DISKNAME:1}"
 fi
 
 echo "Final Disk Name:         ${DISKNAME}"
