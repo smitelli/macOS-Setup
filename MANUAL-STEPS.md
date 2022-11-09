@@ -24,14 +24,23 @@
 
 Once at the desktop, open Terminal.app and follow instructions from the README.
 
-## Post-Bootstrap Settings
+## Post-Bootstrap Settings (12.6)
 
 - System Preferences
-    + Touch ID
-        * Add TODO
-    + Keyboard
-        * Text
-            - Remove that stupid "omw" replacement
+    + Security & Privacy > General > Require password ... after sleep or screen saver begins = **immediately**
+    + Software Update > Advanced... > Install system data files and security updates = **off**
+    + Network > Thunderbolt Bridge > **Remove** (if not being used)
+    + Touch ID > Add fingerprints:
+        * **RH Index**
+        * **LH Index**
+        * **RH thumb**
+    + Keyboard > Text > Remove the **omw** replacement if present
+- Finder Preferences > Sidebar
+    + AirDrop = **on**
+    + iCloud Drive = **off**
+    + Hard disks = **on**
+
+--- TODO ---
 
 - Notifications & Focus
 -- Focus (gets odd when Apple ID is set up)
@@ -40,37 +49,16 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
 -- (Apple ID accounts)
 
 - Security & Privacy
--- Advanced
---- Require an administrator password
--- General
---- Require password ... = immediately
 -- Privacy
 --- Location Services
 ---- System Services > Details...
 ----- Allow [Find My Mac] to determine your location = on
-
-- Software Update
--- Advanced...
---- Download new ... = off
---- Install system data files ... = off
-
-- Network
--- Delete Thunderbolt Bridge
-
-- Sound
--- Sound Effects
---- Play sound on startup = off
-
-- Touch ID
--- Add at least 2 index fingers
--- Enable for [all]
 
 - Apple ID
 -- iCloud
 --- Allow Find My Mac
 
 contacts card
-dictation is different depending on touch bar presence
 
 # Apple ID > iCloud > Photos = off
 # Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
@@ -110,15 +98,9 @@ dictation is different depending on touch bar presence
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
 defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
-# Preferences > Sidebar > Show these items in the sidebar > Favorites
-# - AirDrop = on (sort at bottom of list)
-
 # Preferences > Sidebar > Show these items in the sidebar > iCloud
 # - iCloud Drive = off
 # - Shared = off
-
-# Preferences > Sidebar > Show these items in the sidebar > Locations
-# - [All except computer] = on
 
 # Grow sidebar to snap point
 
