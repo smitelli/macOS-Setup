@@ -27,6 +27,21 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
 ## Post-Bootstrap Settings (12.6)
 
 - System Preferences
+    + **Sign In** to Apple ID
+        * Allow Find My Mac to use the location of this Mac? = **Allow**
+    + Apple ID
+        * iCloud > Enable all except:
+            - **Private Relay**
+            - **Hide My Email**
+            - **iCloud Mail**
+            - **Contacts**
+            - **Calendars**
+            - **Notes**
+            - (If work computer, disable _everything_ except **Find My Mac**)
+        * Media & Purchases > Account: ... > Manage... > **Log into the App Store**
+    + Internet Accounts > Add **Gmail**:
+        * Details... > Description = email address
+        * Enable (at a minimum) **Contacts**
     + Security & Privacy > General > Require password ... after sleep or screen saver begins = **immediately**
     + Software Update > Advanced... > Install system data files and security updates = **off**
     + Network > Thunderbolt Bridge > **Remove** (if not being used)
@@ -47,16 +62,6 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
 
 - Internet Accounts
 -- (Apple ID accounts)
-
-- Security & Privacy
--- Privacy
---- Location Services
----- System Services > Details...
------ Allow [Find My Mac] to determine your location = on
-
-- Apple ID
--- iCloud
---- Allow Find My Mac
 
 contacts card
 
