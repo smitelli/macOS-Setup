@@ -42,13 +42,17 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + Internet Accounts > Add **Gmail**:
         * Details... > Description = email address
         * Enable (at a minimum) **Contacts**
+    + Users & Groups > Current User > Contacts Card: > **Open...**
+        * Make sure Contacts.app is set up with the correct account
+        * Card > Make This My Card
+        * Remove any incorrect entries that refer to the current user
     + Security & Privacy > General > Require password ... after sleep or screen saver begins = **immediately**
     + Software Update > Advanced... > Install system data files and security updates = **off**
     + Network > Thunderbolt Bridge > **Remove** (if not being used)
     + Touch ID > Add fingerprints:
-        * **RH Index**
-        * **LH Index**
-        * **RH thumb**
+        1. **RH Index**
+        2. **LH Index**
+        3. **RH thumb**
     + Keyboard > Text > Remove the **omw** replacement if present
 - Finder Preferences > Sidebar
     + AirDrop = **on**
@@ -56,14 +60,6 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + Hard disks = **on**
 
 --- TODO ---
-
-- Notifications & Focus
--- Focus (gets odd when Apple ID is set up)
-
-- Internet Accounts
--- (Apple ID accounts)
-
-contacts card
 
 # Apple ID > iCloud > Photos = off
 # Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
