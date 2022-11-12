@@ -54,80 +54,22 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
         2. **LH Index**
         3. **RH thumb**
     + Keyboard > Text > Remove the **omw** replacement if present
-- Finder Preferences > Sidebar
-    + AirDrop = **on**
-    + iCloud Drive = **off**
-    + Hard disks = **on**
-
---- TODO ---
-
-# Apple ID > iCloud > Photos = off
-# Find Services[] element w/ Name = "PHOTO_STREAM"; set Enabled = 0
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > iCloud Drive = off
-# ... "MOBILE_DOCUMENTS" ... ; iCloudHomeShouldEnable = 0
-# defaults write MobileMeAccounts Accounts '(...)'
-# PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveEnabled 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
-# PlistBuddy -c Set ':FK_StandardViewSettings:FXICloudDriveFirstSyncDownComplete 0' "${HOME}/Library/Preferences/com.apple.finder.plist"
-# Apple ID > iCloud > Contacts = off
-# ... "CONTACTS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Calendars = off
-# ... "CALENDAR" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Reminders = off
-# ... "REMINDERS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Notes = off
-# ... "NOTES" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Safari = off
-# ... "BOOKMARKS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > News = off
-# ... "NEWS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Stocks = off
-# ... "STOCKS" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Home = off
-# ... "HOME" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-# Apple ID > iCloud > Siri = off
-# ... "SIRI" ...
-# defaults write MobileMeAccounts Accounts '(...)'
-defaults write com.apple.assistant.backedup 'Cloud Sync Enabled' -bool 'false'
-defaults write com.apple.assistant.backedup 'Cloud Sync Enabled Modification Date' -date "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-
-# Preferences > Sidebar > Show these items in the sidebar > iCloud
-# - iCloud Drive = off
-# - Shared = off
-
-# Grow sidebar to snap point
-
-
-<<COMMENT
-- Add Desktop
-18754a18755,18760
->                             },
->                                                         {
->                                 ManagedSpaceID = 11;
->                                 id64 = 11;
->                                 type = 0;
->                                 uuid = "EB57FCD1-3FEC-44F9-A41E-93027C8806EA";
-18781a18788
->                         24,
-18784d18790
-<                         24,
-18787a18794,18800
->                 },
->                                 {
->                     name = "EB57FCD1-3FEC-44F9-A41E-93027C8806EA";
->                     windows =                     (
->                         28,
->                         342
->                     );
-COMMENT
+- Mission Control > Create two desktops on each display
+- Notification Center > Edit Widgets
+    + Calendar > Month
+    + (same row) Clock > World Clock (S)
+        * New York, U.S.A.
+        * Los Angeles, U.S.A.
+        * UTC
+    + Weather > Forecast (L)
+        * Location: My Location
+- Finder
+    + Preferences > Sidebar
+        * AirDrop = **on**
+        * iCloud Drive = **off**
+        * Shared = **off**
+        * Hard disks = **on**
+    + If computer/user name(s) are long, expand sidebar to first snap point
 
 ## Default Stuff
 
