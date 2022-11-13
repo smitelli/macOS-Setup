@@ -70,6 +70,10 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
         * Shared = **off**
         * Hard disks = **on**
     + If computer/user name(s) are long, expand sidebar to first snap point
+- Firefox
+    + Open Firefox at least once to initialize and fill the profile directory
+    + `bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/firefox/setup.sh)"`
+    + Follow the output of the script to finish installing add-ons
 
 ## Default Stuff
 
