@@ -17,6 +17,9 @@ open -F /Applications/Firefox.app && sleep 2
 osascript -e 'tell application "Firefox" to tell every window to set zoomed to true'
 
 # This isn't cleanly scriptable and I wouldn't want to try it anyway
+echo
+echo '===================='
+echo
 echo 'Firefox is now set up. Install the following add-ons manually:'
 echo '  - https://addons.mozilla.org/en-US/firefox/addon/privacy-badger17/ [allow in Private Windows = on]'
 echo '  - https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/ [allow in Private Windows = on]'
