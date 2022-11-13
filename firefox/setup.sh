@@ -4,7 +4,7 @@ SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
 PROFILE_DIR="$(find "${HOME}/Library/Application Support/Firefox/Profiles" -maxdepth 1 -name '*.default-release' | head -n 1)"
 
 # Definitely don't want Firefox running while we're messing with it
-killall firefox
+killall firefox && sleep 2
 
 # Replace all user preferences with our stub prefs, which will rebuild on next restart
 curl -fL "${SELF_URL}/firefox/prefs.js" -o "${PROFILE_DIR}/prefs.js"
@@ -13,7 +13,7 @@ curl -fL "${SELF_URL}/firefox/prefs.js" -o "${PROFILE_DIR}/prefs.js"
 sqlite3 "${PROFILE_DIR}/places.sqlite" 'DELETE FROM `moz_bookmarks` WHERE `parent` > 1;'
 
 # Launch Firefox, then maximize its window(s)
-open -F /Applications/Firefox.app
+open -F /Applications/Firefox.app && sleep 2
 osascript -e 'tell application "Firefox" to tell every window to set zoomed to true'
 
 # This isn't cleanly scriptable and I wouldn't want to try it anyway
