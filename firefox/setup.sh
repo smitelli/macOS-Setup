@@ -13,7 +13,8 @@ curl -fL "${SELF_URL}/firefox/prefs.js" -o "${PROFILE_DIR}/prefs.js"
 sqlite3 "${PROFILE_DIR}/places.sqlite" 'DELETE FROM `moz_bookmarks` WHERE `parent` > 1;'
 
 # Launch Firefox, then maximize its window(s)
-open -F /Applications/Firefox.app && sleep 2
+echo 'Starting Firefox now, wait a few seconds...'
+open -F /Applications/Firefox.app && sleep 5
 osascript -e 'tell application "Firefox" to tell every window to set zoomed to true'
 
 # This isn't cleanly scriptable and I wouldn't want to try it anyway
