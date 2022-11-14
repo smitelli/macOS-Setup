@@ -9,7 +9,7 @@ killall firefox && sleep 2
 # Replace all user preferences with our stub prefs, which will rebuild on next restart
 curl -fL "${SELF_URL}/firefox/prefs.js" -o "${PROFILE_DIR}/prefs.js"
 
-# Delete all the factory bookmarks, but don't wreck the folder structure
+# [106.0] Delete all the factory bookmarks, but don't wreck the folder structure
 sqlite3 "${PROFILE_DIR}/places.sqlite" 'DELETE FROM `moz_bookmarks` WHERE `parent` > 1;'
 
 # Launch Firefox, then maximize its window(s)
