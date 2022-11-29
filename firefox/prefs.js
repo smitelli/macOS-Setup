@@ -52,6 +52,9 @@ user_pref("browser.urlbar.suggest.bookmark", false);
 // [106.0] Preferences > Privacy & Security > Browser Privacy > Address Bar - Firefox Suggest > Open tabs = off
 user_pref("browser.urlbar.suggest.openpage", false);
 
+// [107.0] Preferences > Privacy & Security > Permissions > Location Settings... > Block new requests asking to access your location = on
+user_pref("permissions.default.geo", 2);
+
 // [106.0] Preferences > Privacy & Security > Firefox Data Collection and Use > Allow Firefox to send tecnhical and interaction data = off
 user_pref("datareporting.healthreport.uploadEnabled", false);
 
