@@ -505,6 +505,15 @@ defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
 defaults write com.apple.screencapture target -string 'clipboard'
 
 # ====================
+# SSH Client
+# ====================
+
+# Generate fresh SSH keys for this user on this computer
+ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_rsa" -t rsa -b 3072
+ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_ecdsa" -t ecdsa -b 521
+ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_ed25519" -t ed25519
+
+# ====================
 # Terminal
 # ====================
 
