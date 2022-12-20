@@ -72,3 +72,6 @@ user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-f
 
 // [106.0] UNDOCUMENTED > Hide the "List all tabs" button if there are not enough tabs open to warrant it
 user_pref("browser.tabs.tabmanager.enabled", false);
+
+// [108.0] UNDOCUMENTED > Skip the "Scam Warning" prompt when pasting into the Developer Tools Console
+user_pref("devtools.selfxss.count", 5);
