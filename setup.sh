@@ -76,22 +76,6 @@ sudo -n true || exit
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
-# [12.6] UNDOCUMENTED > Enable TouchID for sudo
-# https://github.com/MikeMcQuaid/strap/blob/192b70290c2dcd1f08de15f704cfe95592246c99/bin/strap.sh#L187-L203
-if ls /usr/lib/pam/pam_tid.so*; then
-    PAM_FILE='/etc/pam.d/sudo'
-    FIND_LINE='# sudo: auth account password session'
-    if grep -q pam_tid.so "$PAM_FILE"; then
-        echo "SKIPPED: TouchID is already enabled in ${PAM_FILE}."
-    elif ! head -n1 "$PAM_FILE" | grep -q "$FIND_LINE"; then
-        echo "ERROR: ${PAM_FILE} does not start with the expected line"
-    else
-        APPEND_LINE='auth       sufficient     pam_tid.so'
-        sudo sed -i '' -e "s/$FIND_LINE/$FIND_LINE\n$APPEND_LINE/" "$PAM_FILE"
-        echo "OK: TouchID enabled in ${PAM_FILE}."
-    fi
-fi
-
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
