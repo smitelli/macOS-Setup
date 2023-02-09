@@ -4,11 +4,13 @@
 # Parse environment
 # ====================
 
-SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get ComputerName)}"
+OS_MAJOR_VERSION="$(sw_vers -productVersion | sed -nr 's/^([0-9]+).*/\1/p')"
+SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get LocalHostName)}"
 INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
 INCLUDE_WORKTOOLS="${INCLUDE_WORKTOOLS:-false}"
 CAPITALIZE_DISK="${CAPITALIZE_DISK:-unset}"
 
+echo    "OS_MAJOR_VERSION:        ${OS_MAJOR_VERSION}"
 echo    "SET_HOSTNAME:            ${SET_HOSTNAME}"
 echo    "INCLUDE_SOFTWARE_UPDATE: ${INCLUDE_SOFTWARE_UPDATE}"
 echo    "INCLUDE_WORKTOOLS:       ${INCLUDE_WORKTOOLS}"
@@ -183,8 +185,13 @@ defaults -currentHost write com.apple.controlcenter Sound -int '16'
 # [12.5] Dock & Menu Bar > Battery > Show Percentage = on
 defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool 'true'
 
-# [12.5] Dock & Menu Bar > Clock > Show date = never
-defaults write com.apple.menuextra.clock DateFormat -string 'EEE h:mm:ss a'
+if [ "$OS_MAJOR_VERSION" -le "12" ]; then
+    # [12.5] Dock & Menu Bar > Clock > Show date = never
+    defaults write com.apple.menuextra.clock DateFormat -string 'EEE h:mm:ss a'
+else
+    # [TODO]
+    defaults write com.apple.menuextra.clock ShowDate -int '2'
+fi
 
 # [12.5] Dock & Menu Bar > Clock > Display the time with seconds = on
 defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
@@ -195,7 +202,7 @@ defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
 # [12.5] Dock & Menu Bar > Wi-Fi > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = on
 # [12.5] Dock & Menu Bar > Battery > Show in Menu Bar = on
-# [12.6] Order = [focus] [display] [battery] [wi-fi] [sound] [bento] [clock]
+# [12.6] Order = [focus] [display] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
 defaults write com.apple.controlcenter '<dict>
     <key>NSStatusItem Preferred Position BentoBox</key>
     <real>128</real>
@@ -205,10 +212,12 @@ defaults write com.apple.controlcenter '<dict>
     <real>192</real>
     <key>NSStatusItem Preferred Position Battery</key>
     <real>224</real>
-    <key>NSStatusItem Preferred Position Display</key>
+    <key>NSStatusItem Preferred Position NowPlaying</key>
     <real>256</real>
-    <key>NSStatusItem Preferred Position FocusModes</key>
+    <key>NSStatusItem Preferred Position Display</key>
     <real>288</real>
+    <key>NSStatusItem Preferred Position FocusModes</key>
+    <real>320</real>
     <key>NSStatusItem Visible Clock</key>
     <true/>
     <key>NSStatusItem Visible BentoBox</key>
@@ -218,6 +227,8 @@ defaults write com.apple.controlcenter '<dict>
     <key>NSStatusItem Visible WiFi</key>
     <true/>
     <key>NSStatusItem Visible Battery</key>
+    <true/>
+    <key>NSStatusItem Visible NowPlaying</key>
     <true/>
     <key>NSStatusItem Visible Display</key>
     <false/>
@@ -396,6 +407,7 @@ mysides add Pictures "file://${HOME}/Pictures/"
 defaults write com.apple.finder ShowRecentTags -bool 'false'
 
 # [12.5] Preferences > Advanced > Show all filename extensions = on
+# TODO This broke in Ventura
 defaults write -g AppleShowAllExtensions -bool 'true'
 
 # [12.5] Preferences > Advanced > Keep folders on top > In windows when sorting by name = on
@@ -431,6 +443,7 @@ defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
 
 # [12.6] UNDOCUMENTED > Disable writing .DS_Store files on network shares
+# TODO This broke in Ventura
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
 
 # [12.6] UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
@@ -493,9 +506,9 @@ defaults write com.apple.screencapture target -string 'clipboard'
 # ====================
 
 # Generate fresh SSH keys for this user on this computer
-ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_rsa" -t rsa -b 3072
-ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_ecdsa" -t ecdsa -b 521
-ssh-keygen -N '' -C "$(logname)@${$SET_HOSTNAME}" -f "${HOME}/.ssh/id_ed25519" -t ed25519
+ssh-keygen -N '' -C "$(logname)@${SET_HOSTNAME}" -f "${HOME}/.ssh/id_rsa" -t rsa -b 3072
+ssh-keygen -N '' -C "$(logname)@${SET_HOSTNAME}" -f "${HOME}/.ssh/id_ecdsa" -t ecdsa -b 521
+ssh-keygen -N '' -C "$(logname)@${SET_HOSTNAME}" -f "${HOME}/.ssh/id_ed25519" -t ed25519
 
 # ====================
 # Terminal
@@ -587,6 +600,7 @@ CURCOLOR="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <integer>100000</integer>
 </dict>
 </plist>"
+# shellcheck disable=SC2016
 FONT='<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
