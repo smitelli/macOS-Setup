@@ -189,7 +189,7 @@ if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Dock & Menu Bar > Clock > Show date = never
     defaults write com.apple.menuextra.clock DateFormat -string 'EEE h:mm:ss a'
 else
-    # [TODO]
+    # [13.2] Control Center > Clock Options... > Show date = Never
     defaults write com.apple.menuextra.clock ShowDate -int '2'
 fi
 
@@ -407,7 +407,6 @@ mysides add Pictures "file://${HOME}/Pictures/"
 defaults write com.apple.finder ShowRecentTags -bool 'false'
 
 # [12.5] Preferences > Advanced > Show all filename extensions = on
-# TODO This broke in Ventura
 defaults write -g AppleShowAllExtensions -bool 'true'
 
 # [12.5] Preferences > Advanced > Keep folders on top > In windows when sorting by name = on
@@ -443,7 +442,6 @@ defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool 'false'
 
 # [12.6] UNDOCUMENTED > Disable writing .DS_Store files on network shares
-# TODO This broke in Ventura
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool 'true'
 
 # [12.6] UNDOCUMENTED > Disable writing .DS_Store files on USB volumes
