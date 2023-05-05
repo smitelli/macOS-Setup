@@ -70,6 +70,9 @@ user_pref("browser.toolbars.bookmarks.visibility", "never");
 // [106.0] View > Toolbars > Customize Toolbar...
 user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"urlbar-container\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\"],\"PersonalToolbar\":[]},\"seen\":[],\"dirtyAreaCache\":[],\"currentVersion\":18,\"newElementCount\":2}");
 
+// [112.0] UNDOCUMENTED > Disable Pocket in all areas of the browser
+user_pref("extensions.pocket.enabled", false);
+
 // [106.0] UNDOCUMENTED > Hide the "List all tabs" button if there are not enough tabs open to warrant it
 user_pref("browser.tabs.tabmanager.enabled", false);
 
