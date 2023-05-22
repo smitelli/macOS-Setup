@@ -78,3 +78,6 @@ user_pref("browser.tabs.tabmanager.enabled", false);
 
 // [108.0] UNDOCUMENTED > Skip the "Scam Warning" prompt when pasting into the Developer Tools Console
 user_pref("devtools.selfxss.count", 5);
+
+// [112.0] UNDOCUMENTED > Bring back the "Right-Click > View Image Info" menu option
+user_pref("browser.menu.showViewImageInfo", true);
