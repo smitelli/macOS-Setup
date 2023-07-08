@@ -378,6 +378,9 @@ defaults write -g NSNavPanelExpandedStateForSaveMode -bool 'true'
 # [12.6] UNDOCUMENTED > Expand print dialogs by default
 defaults write -g PMPrintingExpandedStateForPrint2 -bool 'true'
 
+# [12.6] UNDOCUMENTED > Max out the amount of time that must pass before Touch ID needs the password
+sudo bioutil --system --write --timeout 172800
+
 # ====================
 # Finder
 # ====================
