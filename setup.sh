@@ -722,6 +722,13 @@ dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
 
 # ====================
+# Safari
+# ====================
+
+# [17.3] Preferences > Advanced > Show features for web developers
+defaults write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool 'true'
+
+# ====================
 # Amazon Chime (if installed)
 # ====================
 
