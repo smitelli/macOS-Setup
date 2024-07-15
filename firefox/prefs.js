@@ -70,6 +70,12 @@ user_pref("browser.toolbars.bookmarks.visibility", "never");
 // [106.0] View > Toolbars > Customize Toolbar...
 user_pref("browser.uiCustomization.state", "{\"placements\":{\"widget-overflow-fixed-list\":[],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"urlbar-container\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\"],\"PersonalToolbar\":[]},\"seen\":[],\"dirtyAreaCache\":[],\"currentVersion\":18,\"newElementCount\":2}");
 
+// [128.0] Preferences > Privacy & Security > Website Privacy Preferences > Tell websites not to sell or share my data = on
+user_pref("privacy.globalprivacycontrol.enabled", true);
+
+// [128.0] Preferences > Privacy & Security > Website Advertising Preferences > Allow websites to perform privacy-preserving ad measurement = off
+user_pref("dom.private-attribution.submission.enabled", false);
+
 // [112.0] UNDOCUMENTED > Disable Pocket in all areas of the browser
 user_pref("extensions.pocket.enabled", false);
 
