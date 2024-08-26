@@ -76,6 +76,15 @@ user_pref("privacy.globalprivacycontrol.enabled", true);
 // [128.0] Preferences > Privacy & Security > Website Advertising Preferences > Allow websites to perform privacy-preserving ad measurement = off
 user_pref("dom.private-attribution.submission.enabled", false);
 
+// [129.0] Preferences > Search > Address Bar - Firefox Suggest > Search engines = off
+user_pref("browser.urlbar.suggest.engines", false);
+
+// [129.0] Preferences > Search > Address Bar - Firefox Suggest > Suggestions from Firefox = off
+user_pref("browser.urlbar.suggest.quicksuggest.nonsponsored", false);
+
+// [129.0] Preferences > Search > Address Bar - Firefox Suggest > Suggestions from sponsors = off
+user_pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
+
 // [112.0] UNDOCUMENTED > Disable Pocket in all areas of the browser
 user_pref("extensions.pocket.enabled", false);
 
