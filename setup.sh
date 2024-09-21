@@ -34,6 +34,9 @@ fi
 
 echo "Final Disk Name:         ${DISKNAME}"
 
+nvram 4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102:opencore-version &>/dev/null && USES_OPENCORE='true' || USES_OPENCORE='false'
+echo "Uses OpenCore boot:      ${USES_OPENCORE}"
+
 # Make a base64-encoded blob containing a binary plist.
 # $1: Complete XML-readable plist document.
 # Returns a string like "<data>AA...A=</data>".
@@ -74,14 +77,17 @@ sudo -n true || exit
 # way as early as possible.
 # ====================
 
-# Try to hit as many paths as possible to satisfy prompts within $HOME
+# Try to hit as many paths as possible to satisfy prompts within $HOME.
+# Apparently not so necessary starting between 13.0 and 15.0?
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
+# [15.0] System Settings > Privacy & Security > FileVault > Turn On...
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop = Black
+# [15.0] System Settings > Wallpaper > Black
 osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
 # ====================
@@ -92,13 +98,7 @@ osascript -e 'tell application "System Events" to tell every desktop to set pict
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" < /dev/null
 
 # Install utilities that are required for this script
-brew install git mysides stow
-
-# Install dockutil
-# TODO This can be done with brew when they get around to making a v3 forumula
-PKG="$(mktemp -d)/dockutil.pkg"
-curl -fL 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil-3.0.2.pkg' -o "$PKG"
-sudo installer -verboseR -pkg "$PKG" -target /
+brew install dockutil git mysides stow
 
 # Install Consolas font family system-wide
 curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
@@ -136,106 +136,153 @@ fi
 set -x
 
 # ====================
-# System Preferences
+# System Preferences /
+# System Settings
 # ====================
 
 # [12.5] General > Appearance = Dark
+# [15.0] Appearance > Appearance = Dark
 defaults write -g AppleInterfaceStyle -string 'Dark'
 
 # [12.5] General > Accent color = Graphite
+# [15.0] Appearance > Accent color = Graphite
 # [12.5] General > Highlight color = Graphite
+# [15.0] Appearance > Highlight color = Graphite
 defaults write -g AppleAccentColor -int '-1'
 defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
+# [15.0] Lock Screen > Start Screen Saver when inactive = Never (otherwise, 10 mins)
 defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
-defaults -currentHost write com.apple.screensaver moduleDict "<dict>
-    <key>moduleName</key>
-    <string>After Dark Flying Toasters</string>
-    <key>path</key>
-    <string>${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver</string>
-    <key>type</key>
-    <integer>0</integer>
-</dict>"
+# [15.0] Screen Saver > Choose "After Dark: Flying Toasters"
+defaults -currentHost write com.apple.screensaver moduleDict -dict \
+    moduleName -string 'After Dark Flying Toasters' \
+    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
+    type -int '0'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Right = Disable Screen Saver
+# [15.0] Desktop & Dock > Hot Corners... > Bottom Right = Disable Screen Saver
 defaults write com.apple.dock wvous-br-corner -int '6'
 defaults write com.apple.dock wvous-br-modifier -int '0'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Left = Start Screen Saver
+# [15.0] Desktop & Dock > Hot Corners... > Bottom Left = Start Screen Saver
 defaults write com.apple.dock wvous-bl-corner -int '5'
 defaults write com.apple.dock wvous-bl-modifier -int '0'
 
 # [12.5] Dock & Menu Bar > Dock & Menu Bar > Automatically hide and show the Dock = on
+# [15.0] Desktop & Dock > Dock > Automatically hide and show the Dock = on
 defaults write com.apple.dock autohide -bool 'true'
 
 # [12.5] Dock & Menu Bar > Dock & Menu Bar > Show recent applications in Dock = off
+# [15.0] Desktop & Dock > Dock > Show suggested and recent apps in Dock = off
 defaults write com.apple.dock show-recents -bool 'false'
 
-# [12.5] Dock & Menu Bar > Screen Mirroring > Show in Menu Bar = off
-defaults write com.apple.airplay showInMenuBarIfPresent -bool 'false'
+# [15.0] Control Center > Control Center Modules > ...
+# Order: [focus] [display] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
+    # Blank out any existing menu bar arrangement
+    defaults write com.apple.controlcenter -dict \
+        'NSStatusItem Visible Clock' -bool 'true' \
+        'NSStatusItem Visible BentoBox' -bool 'true' \
+        'NSStatusItem Preferred Position BentoBox' -int '128'
 
-# [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = always
-defaults -currentHost write com.apple.controlcenter Sound -int '16'
+    # Wi-Fi = Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter WiFi -int '2'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible WiFi' -bool 'true'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position WiFi' -int '192'
 
-# [12.5] Dock & Menu Bar > Battery > Show Percentage = on
-defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool 'true'
+    # Bluetooth = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter Bluetooth -int '8'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible Bluetooth' -bool 'false'
+
+    # AirDrop = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter AirDrop -int '8'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible AirDrop' -bool 'false'
+
+    # Focus = Show When Active
+    defaults -currentHost write com.apple.controlcenter FocusModes -int '2'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible FocusModes' -bool 'false'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position FocusModes' -int '320'
+
+    # Stage Manager = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter StageManager -int '8'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible StageManager' -bool 'false'
+
+    # Screen Mirroring = Show When Active
+    defaults -currentHost write com.apple.controlcenter ScreenMirroring -int '2'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible ScreenMirroring' -bool 'false'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position ScreenMirroring' -int '288'
+    if [ "$OS_MAJOR_VERSION" -le "13" ]; then
+        # [12.5] Dock & Menu Bar > Screen Mirroring > Show in Menu Bar = off
+        defaults write com.apple.airplay showInMenuBarIfPresent -bool 'false'
+    fi
+
+    # Display = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter Display -int '8'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible Display' -bool 'false'
+
+    # Sound = Always Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter Sound -int '18'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible Sound' -bool 'true'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Sound' -int '160'
+
+    # Now Playing = Show When Active
+    defaults -currentHost write com.apple.controlcenter NowPlaying -int '2'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible NowPlaying' -bool 'false'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position NowPlaying' -int '256'
+
+# [15.0] Control Center > Other Modules > ...
+    # Accessibility Shortcuts = Show in Menu Bar = off; Show in Control Center = off
+    defaults -currentHost write com.apple.controlcenter AccessibilityShortcuts -int '12'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible AccessibilityShortcuts' -bool 'false'
+
+    # Battery = Show in Menu Bar = off; Show in Control Center = off; Show Percentage = on
+    defaults -currentHost write com.apple.controlcenter Battery -int '6'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -bool 'true'
+    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Battery' -int '224'
+    defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool 'true'
+
+    # Music Recognition = Show in Menu Bar = off; Show in Control Center = off
+    defaults -currentHost write com.apple.controlcenter MusicRecognition -int '12'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible MusicRecognition' -bool 'false'
+
+    # Hearing = Show in Menu Bar = off; Show in Control Center = off
+    defaults -currentHost write com.apple.controlcenter Hearing -int '12'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible Hearing' -bool 'false'
+
+    # Fast User Switching = Show in Menu Bar = Don't Show; Show in Control Center = off
+    defaults -currentHost write com.apple.controlcenter UserSwitcher -int '12'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible UserSwitcher' -bool 'false'
+
+    # Keyboard Brightness = Show in Menu Bar = off; Show in Control Center = off
+    defaults -currentHost write com.apple.controlcenter KeyboardBrightness -int '12'
+    defaults write com.apple.controlcenter 'NSStatusItem Visible KeyboardBrightness' -bool 'false'
+
+# [15.0] Control Center > Menu Bar Only > ...
+    # Spotlight = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
+
+    # Siri = Don't Show in Menu Bar
+    defaults -currentHost write com.apple.controlcenter Siri -int '8'
+    Defaults write com.apple.Siri StatusMenuVisible -bool 'false'
+
+killall ControlCenter
 
 if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Dock & Menu Bar > Clock > Show date = never
     defaults write com.apple.menuextra.clock DateFormat -string 'EEE h:mm:ss a'
 else
-    # [13.2] Control Center > Clock Options... > Show date = Never
+    # [13.2] Control Center > Clock Options... > Date > Show date = Never
     defaults write com.apple.menuextra.clock ShowDate -int '2'
 fi
 
 # [12.5] Dock & Menu Bar > Clock > Display the time with seconds = on
+# [15.0] Control Center > Clock Options... > Time > Display the time with seconds = on
 defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
-
-# [12.5] Dock & Menu Bar > Spotlight > Show in Menu Bar = off
-defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
-
-# [12.5] Dock & Menu Bar > Wi-Fi > Show in Menu Bar = on
-# [12.5] Dock & Menu Bar > Sound > Show in Menu Bar = on
-# [12.5] Dock & Menu Bar > Battery > Show in Menu Bar = on
-# [12.6] Order = [focus] [display] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
-defaults write com.apple.controlcenter '<dict>
-    <key>NSStatusItem Preferred Position BentoBox</key>
-    <real>128</real>
-    <key>NSStatusItem Preferred Position Sound</key>
-    <real>160</real>
-    <key>NSStatusItem Preferred Position WiFi</key>
-    <real>192</real>
-    <key>NSStatusItem Preferred Position Battery</key>
-    <real>224</real>
-    <key>NSStatusItem Preferred Position NowPlaying</key>
-    <real>256</real>
-    <key>NSStatusItem Preferred Position Display</key>
-    <real>288</real>
-    <key>NSStatusItem Preferred Position FocusModes</key>
-    <real>320</real>
-    <key>NSStatusItem Visible Clock</key>
-    <true/>
-    <key>NSStatusItem Visible BentoBox</key>
-    <true/>
-    <key>NSStatusItem Visible Sound</key>
-    <true/>
-    <key>NSStatusItem Visible WiFi</key>
-    <true/>
-    <key>NSStatusItem Visible Battery</key>
-    <true/>
-    <key>NSStatusItem Visible NowPlaying</key>
-    <true/>
-    <key>NSStatusItem Visible Display</key>
-    <false/>
-    <key>NSStatusItem Visible FocusModes</key>
-    <false/>
-</dict>'
-killall ControlCenter
 
 # [12.5] Notifications & Focus > Notifications > Allow notifications when the display is sleeping = on
 PLIST='<?xml version="1.0" encoding="UTF-8"?>
