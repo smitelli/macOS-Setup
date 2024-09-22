@@ -820,7 +820,8 @@ fi
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
 # TODO syntax-highlight doesn't coexist peacefully with these
-brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
+# TODO not convinced any of these are doing what they used to
+# brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
 
 # Add preferred apps to the Dock in order
 [ -e '/Applications/Google Chrome.app' ] &&  dockutil --no-restart --add '/Applications/Google Chrome.app'
@@ -872,11 +873,11 @@ defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
 # ====================
 
 # [1.0] First Run > Check for updates automatically? = Check Automatically
-defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
-defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
+# defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
+# defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
 
 # [1.0] App must be started at least once to register its plugin (ugh)
-open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"'
+# open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"'
 
 # ====================
 # Clean up
