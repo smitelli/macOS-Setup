@@ -62,8 +62,8 @@ SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
 # Ask for the administrator password at the very beginning...
 sudo -v
 
-# ... and refresh it every 60 seconds until the script exits.
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+# ... and (unsafely, lazily) refresh it every 50 seconds until killed.
+while sleep 50; do sudo -v; done &
 
 # If we don't have sudo at this point, no reason to continue
 sudo -n true || exit
@@ -158,11 +158,11 @@ defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
-# [15.0] Screen Saver > Choose "After Dark: Flying Toasters"
-defaults -currentHost write com.apple.screensaver moduleDict -dict \
-    moduleName -string 'After Dark Flying Toasters' \
-    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
-    type -int '0'
+# TODO broke
+#defaults -currentHost write com.apple.screensaver moduleDict -dict \
+#    moduleName -string 'After Dark Flying Toasters' \
+#    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
+#    type -int '0'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Right = Disable Screen Saver
 # [15.0] Desktop & Dock > Hot Corners... > Bottom Right = Disable Screen Saver
@@ -185,10 +185,14 @@ defaults write com.apple.dock show-recents -bool 'false'
 # [15.0] Control Center > Control Center Modules > ...
 # Order: [focus] [display] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
     # Blank out any existing menu bar arrangement
-    defaults write com.apple.controlcenter -dict \
-        'NSStatusItem Visible Clock' -bool 'true' \
-        'NSStatusItem Visible BentoBox' -bool 'true' \
-        'NSStatusItem Preferred Position BentoBox' -int '128'
+    defaults write com.apple.controlcenter '<dict>
+        <key>NSStatusItem Visible Clock</key>
+        <true/>
+        <key>NSStatusItem Visible BentoBox</key>
+        <true/>
+        <key>NSStatusItem Preferred Position BentoBox</key>
+        <integer>128</integer>
+    </dict>'
 
     # Wi-Fi = Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter WiFi -int '2'
@@ -240,7 +244,7 @@ defaults write com.apple.dock show-recents -bool 'false'
     defaults -currentHost write com.apple.controlcenter AccessibilityShortcuts -int '12'
     defaults write com.apple.controlcenter 'NSStatusItem Visible AccessibilityShortcuts' -bool 'false'
 
-    # Battery = Show in Menu Bar = off; Show in Control Center = off; Show Percentage = on
+    # Battery = Show in Menu Bar = on; Show in Control Center = off; Show Percentage = on
     defaults -currentHost write com.apple.controlcenter Battery -int '6'
     defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -bool 'true'
     defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Battery' -int '224'
@@ -276,37 +280,38 @@ if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Dock & Menu Bar > Clock > Show date = never
     defaults write com.apple.menuextra.clock DateFormat -string 'EEE h:mm:ss a'
 else
-    # [13.2] Control Center > Clock Options... > Date > Show date = Never
+    # [13.2] Control Center > Menu Bar Only > Clock Options... > Date > Show date = Never
     defaults write com.apple.menuextra.clock ShowDate -int '2'
 fi
 
 # [12.5] Dock & Menu Bar > Clock > Display the time with seconds = on
-# [15.0] Control Center > Clock Options... > Time > Display the time with seconds = on
+# [15.0] Control Center > Menu Bar Only > Clock Options... > Time > Display the time with seconds = on
 defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
 
 # [12.5] Notifications & Focus > Notifications > Allow notifications when the display is sleeping = on
 # [15.0] Notifications > Notification Center > Allow notifications when the display is sleeping = on
-PLIST='<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>dndDisplayLock</key>
-    <true/>
-    <key>dndDisplaySleep</key>
-    <false/>
-    <key>dndMirrored</key>
-    <true/>
-    <key>facetimeCanBreakDND</key>
-    <false/>
-    <key>playSoundsForForwardedNotifications</key>
-    <true/>
-    <key>repeatedFacetimeCallsBreaksDND</key>
-    <false/>
-    <key>summarizeNotifications</key>
-    <true/>
-</dict>
-</plist>'
-defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
+# TODO broke
+#PLIST='<?xml version="1.0" encoding="UTF-8"?>
+#<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+#<plist version="1.0">
+#<dict>
+#    <key>dndDisplayLock</key>
+#    <true/>
+#    <key>dndDisplaySleep</key>
+#    <false/>
+#    <key>dndMirrored</key>
+#    <true/>
+#    <key>facetimeCanBreakDND</key>
+#    <false/>
+#    <key>playSoundsForForwardedNotifications</key>
+#    <true/>
+#    <key>repeatedFacetimeCallsBreaksDND</key>
+#    <false/>
+#    <key>summarizeNotifications</key>
+#    <true/>
+#</dict>
+#</plist>'
+#defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
 
 # [12.6] Users & Groups > [self] > Edit profile picture
 # Cherry-picked from https://apple.stackexchange.com/a/432510
@@ -431,6 +436,8 @@ sudo pmset -c displaysleep 0
 sudo pmset -c sleep 0
 
 # [12.5] Sharing > Computer Name = ...
+# [15.0] General > About > Name
+# [15.0] General > Sharing > Local hostname > Edit...
 sudo scutil --set LocalHostName "$SET_HOSTNAME"
 sudo scutil --set ComputerName "$SET_HOSTNAME"
 dscacheutil -flushcache
@@ -480,7 +487,6 @@ mysides add Downloads "file://${HOME}/Downloads/"
 mysides add Movies "file://${HOME}/Movies/"
 mysides add Music "file://${HOME}/Music/"
 mysides add Pictures "file://${HOME}/Pictures/"
-mysides add Public "file://${HOME}/Public/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 # [15.0] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
@@ -593,6 +599,7 @@ defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
 # ====================
 
 # [18.0] Settings > Advanced > Show features for web developers
+# TODO check this one again
 defaults write com.apple.Safari IncludeDevelopMenu -bool 'true'
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool 'true'
 defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool 'true'
@@ -803,6 +810,9 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 
 # Install common apps
 brew install --no-quarantine firefox keepassxc sublime-text vlc
+if [ "$USES_OPENCORE" = 'true' ]; then
+    brew install --no-quarantine opencore-patcher
+fi
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     brew install --no-quarantine amazon-chime homebrew/cask/docker google-chrome zoom
 fi
@@ -813,18 +823,20 @@ fi
 brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
 
 # Add preferred apps to the Dock in order
-[ -e '/Applications/Google Chrome.app' ] &&  dockutil --add '/Applications/Google Chrome.app'
-dockutil --add '/Applications/Firefox.app'
-dockutil --add '/System/Applications/Utilities/Terminal.app'
-dockutil --add '/Applications/Sublime Text.app'
-dockutil --add '/Applications/KeePassXC.app'
-dockutil --add '/Applications/VLC.app'
-[ -e '/Applications/Amazon Chime.app' ] &&  dockutil --add '/Applications/Amazon Chime.app'
-[ -e '/Applications/Docker.app' ] &&  dockutil --add '/Applications/Docker.app'
-[ -e '/Applications/zoom.us.app' ] &&  dockutil --add '/Applications/zoom.us.app'
-dockutil --add '/System/Applications/Calculator.app'
-dockutil --add '/System/Applications/Utilities/Screenshot.app'
-dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
+[ -e '/Applications/Google Chrome.app' ] &&  dockutil --no-restart --add '/Applications/Google Chrome.app'
+dockutil --no-restart --add '/Applications/Firefox.app'
+dockutil --no-restart --add '/System/Applications/Utilities/Terminal.app'
+dockutil --no-restart --add '/Applications/Sublime Text.app'
+dockutil --no-restart --add '/Applications/KeePassXC.app'
+dockutil --no-restart --add '/Applications/VLC.app'
+[ -e '/Applications/Amazon Chime.app' ] &&  dockutil --no-restart --add '/Applications/Amazon Chime.app'
+[ -e '/Applications/Docker.app' ] &&  dockutil --no-restart --add '/Applications/Docker.app'
+[ -e '/Applications/zoom.us.app' ] &&  dockutil --no-restart --add '/Applications/zoom.us.app'
+dockutil --no-restart --add '/System/Applications/Calculator.app'
+dockutil --no-restart --add '/System/Applications/Utilities/Screenshot.app'
+dockutil --no-restart --add '/System/Applications/Utilities/Activity Monitor.app'
+
+killall Dock
 
 # ====================
 # Amazon Chime (if installed)

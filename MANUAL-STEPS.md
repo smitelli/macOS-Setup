@@ -1,6 +1,6 @@
 # Manual Steps
 
-## From-Scratch Installation (12.6)
+## From-Scratch Installation (15.0)
 
 - Language = **English**
 - Select Your Country or Region = **United States**
@@ -75,11 +75,32 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + `bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/firefox/setup.sh)"`
     + Follow the output of the script to finish installing add-ons
 
-## Default Stuff
+## Property List Reading/Dumping Stuff
 
 ```bash
-defaults read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults read)
-defaults -currentHost read > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(defaults -currentHost read)
-find /Library/Preferences -type f -exec defaults read '{}' \; > /tmp/defaults; read -sp $'?\n' -n1; diff /tmp/defaults <(find /Library/Preferences -type f -exec defaults read '{}' \;)
-F=$(mktemp); cp ~/Library/Preferences/com.apple.Terminal.plist "$F"; plutil -convert xml1 "$F"; less -S "$F"
+dump_defaults() {
+    echo '=== SUDO Any Host ==='
+    sudo defaults read
+    echo '=== SUDO Current Host ==='
+    sudo defaults -currentHost read
+    echo '=== SUDO Local Host ==='
+    sudo defaults -host localhost read
+    echo '=== Any Host ==='
+    defaults read
+    echo '=== Current Host ==='
+    defaults -currentHost read
+    echo '=== Local Host ==='
+    defaults -host localhost read
+}
+dump_defaults > /tmp/before; read -sp $'?\n' -n1; dump_defaults > /tmp/after; diff /tmp/{before,after}
+
+dump_defaults_dumb() {
+    sudo find /Library/Preferences -type f -exec echo {} \; -exec plutil -p {} \;
+    find ~/Library/Preferences -type f -exec echo {} \; -exec plutil -p {} \;
+}
+dump_defaults_dumb > /tmp/before; read -sp $'?\n' -n1; dump_defaults_dumb > /tmp/after; diff /tmp/{before,after}
+
+dump_plist_xml() {
+    F=$(mktemp); cp "$1" "$F"; plutil -convert xml1 "$F"; cat "$F"
+}
 ````
