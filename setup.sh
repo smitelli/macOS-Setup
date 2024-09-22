@@ -4,6 +4,9 @@
 # Parse environment
 # ====================
 
+# NOTE: I skipped from macOS 12 "Monterey" straight to 15 "Sequoia." The
+# operations that consider $OS_MAJOR_VERSION might not be 100% accurate for
+# those in-between releases.
 OS_MAJOR_VERSION="$(sw_vers -productVersion | sed -nr 's/^([0-9]+).*/\1/p')"
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get LocalHostName)}"
 INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
@@ -46,7 +49,7 @@ _make_bplist() {
     plist="$(mktemp)"
     echo "$1" > "$plist"
     plutil -convert binary1 "$plist"
-    echo "<data>$(base64 "$plist")</data>"
+    echo "<data>$(base64 -i "$plist")</data>"
     rm -f "$plist"
 }
 
@@ -55,9 +58,6 @@ _make_bplist() {
 # ====================
 
 SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
-
-# Add /usr/libexec to the $PATH temporarily to make it cleaner to run PlistBuddy
-PATH="$PATH:/usr/libexec"
 
 # Ask for the administrator password at the very beginning...
 sudo -v
@@ -285,6 +285,7 @@ fi
 defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
 
 # [12.5] Notifications & Focus > Notifications > Allow notifications when the display is sleeping = on
+# [15.0] Notifications > Notification Center > Allow notifications when the display is sleeping = on
 PLIST='<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -297,8 +298,12 @@ PLIST='<?xml version="1.0" encoding="UTF-8"?>
     <true/>
     <key>facetimeCanBreakDND</key>
     <false/>
+    <key>playSoundsForForwardedNotifications</key>
+    <true/>
     <key>repeatedFacetimeCallsBreaksDND</key>
     <false/>
+    <key>summarizeNotifications</key>
+    <true/>
 </dict>
 </plist>'
 defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
@@ -312,16 +317,24 @@ echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:Record
 sudo dsimport "$RECORD" /Local/Default M
 
 # [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
-sudo chsh -s /bin/bash "$(logname)"
+# TODO The world is dragging me kicking and screaming to zsh
+# sudo chsh -s /bin/bash "$(logname)"
 
 # [12.6] Security & Privacy > General > Show a message when the screen is locked = on
 # [12.6] Security & Privacy > General > Set Lock Message...
+# [15.0] Lock Screen > Show message when locked = on
+# [15.0] Lock Screen > Show message when locked > Set...
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
     "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
 
-# [12.6] Security & Privacy > Firewall > Turn On Firewall
-sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
-sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
+if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+    # [12.6] Security & Privacy > Firewall > Turn On Firewall
+    sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
+    sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
+else
+    # [15.0] Network > Firewall > on
+    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+fi
 
 # [12.5] Security & Privacy > Privacy > Apple Advertising > Personalized Ads = off
 defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool 'false'
@@ -346,51 +359,57 @@ defaults write -g InitialKeyRepeat -int '25'
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
 # [12.6] Keyboard > Keyboard > Customize Control Strip
-defaults write com.apple.controlstrip FullCustomized '<array>
-    <string>com.apple.system.group.brightness</string>
-    <string>com.apple.system.mission-control</string>
-    <string>com.apple.system.launchpad</string>
-    <string>com.apple.system.group.keyboard-brightness</string>
-    <string>com.apple.system.group.media</string>
-    <string>com.apple.system.group.volume</string>
-</array>'
-defaults write com.apple.controlstrip MiniCustomized '<array>
-    <string>com.apple.system.brightness</string>
-    <string>com.apple.system.volume</string>
-    <string>com.apple.system.mute</string>
-    <string>com.apple.system.screen-lock</string>
-</array>'
+defaults write com.apple.controlstrip FullCustomized -array \
+    -string 'com.apple.system.group.brightness' \
+    -string 'com.apple.system.mission-control' \
+    -string 'com.apple.system.launchpad' \
+    -string 'com.apple.system.group.keyboard-brightness' \
+    -string 'com.apple.system.group.media' \
+    -string 'com.apple.system.group.volume'
+defaults write com.apple.controlstrip MiniCustomized -array \
+    -string 'com.apple.system.brightness' \
+    -string 'com.apple.system.volume' \
+    -string 'com.apple.system.mute' \
+    -string 'com.apple.system.screen-lock'
 
 # Keyboard > Text > Remove "omw" replacement (TODO bugged)
 defaults write com.apple.textInput.keyboardServices.textReplacement KSDidPushMigrationStatusOnce-2 -bool 'true'
 defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShortcutWasImported_CK -bool 'true'
 defaults write -g NSUserDictionaryReplacementItems '()'
 
+# [12.6] Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
+# [15.0] Keyboard > Keyboard navigation = on
+# TODO Figure out differences between 2 (from SysPrefs) and 3 (from randos)
+defaults write -g AppleKeyboardUIMode -int '3'
+
 # [12.5] Keyboard > Text > Correct spelling automatically = off
+# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Correct spelling automatically = off
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool 'false'
 defaults write -g WebAutomaticSpellingCorrectionEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Capitalize words automatically = off
+# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Capitalize words automatically = off
 defaults write -g NSAutomaticCapitalizationEnabled -bool 'false'
 
+# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Show inline predictive text = off
+defaults write -g NSAutomaticInlinePredictionEnabled -bool 'false'
+
 # [12.5] Keyboard > Text > Add period with double-space = off
+# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Add period with double-space = off
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
 
-# [12.6] Keyboard > Text > Touch Bar typing suggestions = off
-defaults write -g NSAutomaticTextCompletionEnabled -bool 'false'
-
 # [12.5] Keyboard > Text > Use smart quotes and dashes = off
+# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Use smart quotes and dashes = off
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticDashSubstitutionEnabled -bool 'false'
 
-# [12.6] Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
-# TODO Figure out differences between 2 (from SysPrefs) and 3 (from randos)
-defaults write -g AppleKeyboardUIMode -int '3'
+# [12.6] Keyboard > Text > Touch Bar typing suggestions = off
+# [15.0] Keyboard > Touch Bar Settings > Show typing suggestions = off
+defaults write -g NSAutomaticTextCompletionEnabled -bool 'false'
 
 # [12.6] Trackpad > Point & Click > Tap to click = on
 defaults write com.apple.AppleMultitouchTrackpad Clicking -bool 'true'
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool 'true'
-defaults write -g com.apple.mouse.tapBehavior -int '1'
 defaults -currentHost write -g com.apple.mouse.tapBehavior -int '1'
 
 # [12.5] Trackpad > Point & Click > Tracking speed = 5/9
@@ -400,12 +419,15 @@ defaults write -g com.apple.trackpad.scaling -float '1'
 defaults write com.apple.dock showAppExposeGestureEnabled -bool 'true'
 
 # [12.5] Battery > Battery > Turn display off after = 10m
+# [15.0] Lock Screen > Turn display off on battery when inactive = For 10 minutes
 sudo pmset -b displaysleep 10
 
 # [12.5] Battery > Power Adapter > Turn display off after = Never
+# [15.0] Lock Screen > Turn display off on power adapter when inactive = Never
 sudo pmset -c displaysleep 0
 
 # [12.5] Battery > Power Adapter > Prevent your Mac from automatically sleeping when the display is off = on
+# [15.0] Battery > Options > Prevent automatic sleeping on power adapter when the display is off = on
 sudo pmset -c sleep 0
 
 # [12.5] Sharing > Computer Name = ...
@@ -413,8 +435,10 @@ sudo scutil --set LocalHostName "$SET_HOSTNAME"
 sudo scutil --set ComputerName "$SET_HOSTNAME"
 dscacheutil -flushcache
 
-# [12.5] Sharing > AirPlay Receiver = off
-defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
+if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+    # [12.5] Sharing > AirPlay Receiver = off
+    defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
+fi
 
 # [12.6] Apple Menu > {Restart,Shut Down}... > Reopen windows when logging back in = off
 defaults write com.apple.loginwindow TALLogoutSavesState -bool 'false'
@@ -433,33 +457,41 @@ sudo bioutil --system --write --timeout 172800
 # ====================
 
 # [12.5] Preferences > General > Show these items on the desktop > Hard disks = on
+# [15.0] Settings > General > Show these items on the desktop > Hard disks = on
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool 'true'
 
 # [12.5] Preferences > General > Show these items on the desktop > Connected servers = on
+# [15.0] Settings > General > Show these items on the desktop > Connected servers = on
 defaults write com.apple.finder ShowMountedServersOnDesktop -bool 'true'
 
 # [12.5] Preferences > General > New finder windows show = home directory
+# [15.0] Settings > General > New finder windows show = home directory
 defaults write com.apple.finder NewWindowTarget -string 'PfHm'
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Favorites
+# [15.0] Settings > Sidebar > Show these items in the sidebar > Favorites
 mysides remove all
-mysides add "$(logname)" "file://${HOME}/"
 mysides add Applications 'file:///Applications/'
+mysides add "$(logname)" "file://${HOME}/"
 mysides add Desktop "file://${HOME}/Desktop/"
 mysides add Documents "file://${HOME}/Documents/"
 mysides add Downloads "file://${HOME}/Downloads/"
 mysides add Movies "file://${HOME}/Movies/"
 mysides add Music "file://${HOME}/Music/"
 mysides add Pictures "file://${HOME}/Pictures/"
+mysides add Public "file://${HOME}/Public/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
+# [15.0] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 defaults write com.apple.finder ShowRecentTags -bool 'false'
 
 # [12.5] Preferences > Advanced > Show all filename extensions = on
+# [15.0] Settings > Advanced > Show all filename extensions = on
 defaults write -g AppleShowAllExtensions -bool 'true'
 
 # [12.5] Preferences > Advanced > Keep folders on top > In windows when sorting by name = on
+# [15.0] Settings > Advanced > Keep folders on top > In windows when sorting by name = on
 defaults write com.apple.finder _FXSortFoldersFirst -bool 'true'
 
 # [12.5] Preferences > Advanced > When performing a search = Search the Current Folder
@@ -480,10 +512,10 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 defaults write com.apple.finder FXPreferredViewStyle -string 'clmv'
 
 # [12.5] View > Sort By = Name
-PlistBuddy -c 'Set :DesktopViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
-PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
-PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
-PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
+/usr/libexec/PlistBuddy -c 'Set :DesktopViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
+/usr/libexec/PlistBuddy -c 'Set :FK_StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
+/usr/libexec/PlistBuddy -c 'Set :StandardViewSettings:IconViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
+/usr/libexec/PlistBuddy -c 'Set :StandardViewSettings:GalleryViewSettings:arrangeBy name' "${HOME}/Library/Preferences/com.apple.finder.plist"
 
 # [12.6] UNDOCUMENTED > Delay before showing folder icon in window toolbars (sec)
 defaults write -g NSToolbarTitleViewRolloverDelay -float 0.5
@@ -500,6 +532,8 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool 'true'
 # [12.6] UNDOCUMENTED > Delay before showing tooltips (ms)
 defaults write -g NSInitialToolTipDelay -int 500
 
+killall Finder
+
 # ====================
 # Dock
 # ====================
@@ -509,14 +543,20 @@ defaults delete com.apple.dock.extra || true  # [12.5] doesn't exist on fresh in
 defaults write com.apple.dock persistent-apps '()'
 defaults write com.apple.dock persistent-others '()'
 defaults write com.apple.dock recent-apps '()'
+
 killall Dock
 
 # ====================
 # Calculator
 # ====================
 
-# [12.5] View > Scientific
-defaults write com.apple.calculator ViewDefaultsKey -string 'Scientific'
+if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+    # [12.5] View > Scientific
+    defaults write com.apple.calculator ViewDefaultsKey -string 'Scientific'
+else
+    # [15.0] View > Scientific
+    defaults write com.apple.calculator CalculatorMode -string 'scientific'
+fi
 
 # [12.5] View > Show Thousands Separators
 defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
@@ -525,8 +565,13 @@ defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
 # Font Book
 # ====================
 
-# [12.5] Preferences > Default Install Location = Computer
-defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
+if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+    # [12.5] Preferences > Default Install Location = Computer
+    defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
+else
+    # [15.0] Settings > Installation > Default install location = All Users
+    defaults write com.apple.FontBook installLocation -int '-2'
+fi
 
 # ====================
 # Disk Utility
@@ -541,6 +586,16 @@ defaults write com.apple.DiskUtility SidebarShowAllDevices -bool 'true'
 
 # [12.5] View > Show APFS Snapshots
 defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
+
+# ====================
+# Safari
+# ====================
+
+# [18.0] Settings > Advanced > Show features for web developers
+defaults write com.apple.Safari IncludeDevelopMenu -bool 'true'
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool 'true'
+defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool 'true'
+defaults write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool 'true'
 
 # ====================
 # Screenshot
@@ -767,13 +822,6 @@ dockutil --add '/Applications/VLC.app'
 dockutil --add '/System/Applications/Calculator.app'
 dockutil --add '/System/Applications/Utilities/Screenshot.app'
 dockutil --add '/System/Applications/Utilities/Activity Monitor.app'
-
-# ====================
-# Safari
-# ====================
-
-# [17.3] Preferences > Advanced > Show features for web developers
-defaults write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool 'true'
 
 # ====================
 # Amazon Chime (if installed)
