@@ -137,7 +137,7 @@ set -x
 
 # ====================
 # System Preferences /
-# System Settings
+# [13.0] System Settings
 # ====================
 
 # [12.5] General > Appearance = Dark
@@ -495,6 +495,7 @@ defaults write -g AppleShowAllExtensions -bool 'true'
 defaults write com.apple.finder _FXSortFoldersFirst -bool 'true'
 
 # [12.5] Preferences > Advanced > When performing a search = Search the Current Folder
+# [15.0] Settings > Advanced > When performing a search = Search the Current Folder
 defaults write com.apple.finder FXDefaultSearchScope -string 'SCcf'
 
 # [12.6] File > Get Info > Expand General, More Info, Name & Extension, Comments,
@@ -786,9 +787,11 @@ defaults write com.apple.Terminal 'Window Settings' -dict-add "$PROFILE_NAME" "<
 </dict>"
 
 # [12.5] Preferences > General > On startup, open new window with profile = [profile]
+# [15.0] Settings > General > On startup, open new window with profile = [profile]
 defaults write com.apple.Terminal 'Startup Window Settings' -string "$PROFILE_NAME"
 
 # [12.5] Preferences > Profiles > Set [profile] as Default
+# [15.0] Settings > Profiles > Set [profile] as Default
 defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NAME"
 
 # [12.6] View > Hide Marks
