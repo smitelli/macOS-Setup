@@ -86,10 +86,6 @@ find "$HOME" > /dev/null 2>&1
 # [13.7] System Settings > Privacy & Security > FileVault > Turn On...
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
-# [12.6] System Preferences > Desktop & Screen Saver > Desktop = Black
-# [13.7] System Settings > Wallpaper > Black
-osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
-
 # ====================
 # Installations
 # ====================
@@ -105,7 +101,12 @@ curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola
 
 # Install user profile and background banner images
 curl -fL "${SELF_URL}/data/pictures/profile{,-bg}.jpg" -o "${HOME}/Pictures/profile#1.jpg"
-curl -fL "${SELF_URL}/data/pictures/bliss.jpg" -o "${HOME}/Pictures/bliss.jpg"
+curl -fL "${SELF_URL}/data/pictures/bliss.jpg" -o "${HOME}/Pictures/Bliss.jpg"
+
+# [12.6] System Preferences > Desktop & Screen Saver > Desktop = Bliss.jpg
+# [13.7] System Settings > Wallpaper > Bliss.jpg
+osascript -e "tell application \"System Events\" to tell every desktop to \
+    set picture to \"${HOME}/Pictures/Bliss.jpg\" as POSIX file"
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC="$(mktemp)"
@@ -154,6 +155,9 @@ defaults write -g AppleInterfaceStyle -string 'Dark'
 defaults write -g AppleAccentColor -int '-1'
 defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
+
+# [13.7] Accessibility > Display > Reduce transparency = on
+defaults write com.apple.universalaccess reduceTransparency -bool 'true'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
 # [13.7] Lock Screen > Start Screen Saver when inactive = Never (otherwise, 10 mins)
