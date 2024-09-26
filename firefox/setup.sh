@@ -24,7 +24,12 @@ echo
 echo 'Firefox is now set up. Install the following add-ons manually:'
 echo '  - https://addons.mozilla.org/en-US/firefox/addon/privacy-badger17/ [allow in Private Windows = on]'
 echo '  - https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/ [allow in Private Windows = on]'
-echo '  - https://addons.mozilla.org/en-US/firefox/addon/istilldontcareaboutcookies/ [allow in Private Windows = on]'
+echo '    - Click "More" until the window widens'
+echo '    - Activate all "Cookie notices" filter lists'
+echo '    - Activate all "Annoyances" filter lists'
+# NOTE: Currently testing uBO for cookie message suppression
+#echo '  - https://addons.mozilla.org/en-US/firefox/addon/istilldontcareaboutcookies/ [allow in Private Windows = on]'
 echo
 echo 'Privacy Badger and uBlock Origin go in the toolbar.'
-echo 'All other add-ons should be placed alphabetically in the "More tools..." menu.'
+echo 'All other add-ons should be placed alphabetically in the "Extensions" menu.'
+echo 'Move "Extensions" to the right of the other add-ons.'
