@@ -831,9 +831,10 @@ fi
 
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
-# TODO syntax-highlight doesn't coexist peacefully with these
-# TODO not convinced any of these are doing what they used to
-# brew install --no-quarantine qlcolorcode qlmarkdown qlstephen quicklook-json
+brew install --no-quarantine qlmarkdown quicklook-json syntax-highlight
+xattr -dr com.apple.quarantine "${HOME}"/Library/QuickLook/*.qlgenerator
+qlmanage -r
+qlmanage -r cache
 
 # Add preferred apps to the Dock in order
 [ -e '/Applications/Google Chrome.app' ] &&  dockutil --no-restart --add '/Applications/Google Chrome.app'
@@ -888,12 +889,27 @@ fi
 # QLMarkdown
 # ====================
 
-# [1.0] First Run > Check for updates automatically? = Check Automatically
-# defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
-# defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
+if [ -e '/Applications/QLMarkdown.app' ]; then
+    # [1.0] First Run > Check for updates automatically? = Check Automatically
+    defaults write org.sbarex.QLMarkdown SUEnableAutomaticChecks -bool 'true'
+    defaults write org.sbarex.QLMarkdown SUHasLaunchedBefore -bool 'true'
 
-# [1.0] App must be started at least once to register its plugin (ugh)
-# open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"'
+    # [1.0] App must be started at least once to register its plugin (ugh)
+    open -g '/Applications/QLMarkdown.app' && sleep 5 && osascript -e 'quit app "QLMarkdown"'
+fi
+
+# ====================
+# Syntax Highlight
+# ====================
+
+if [ -e '/Applications/Syntax Highlight.app' ]; then
+    # [2.1.24] First Run > Check for updates automatically? = Check Automatically
+    defaults write org.sbarex.SourceCodeSyntaxHighlight SUEnableAutomaticChecks -bool 'true'
+    defaults write org.sbarex.SourceCodeSyntaxHighlight SUHasLaunchedBefore -bool 'true'
+
+    # [2.1.24] App must be started at least once to register its plugin (ugh)
+    open -g '/Applications/Syntax Highlight.app' && sleep 5 && osascript -e 'quit app "Syntax Highlight"'
+fi
 
 # ====================
 # Clean up
