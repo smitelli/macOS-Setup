@@ -4,7 +4,7 @@
 # Parse environment
 # ====================
 
-# NOTE: I skipped from macOS 12 "Monterey" straight to 15 "Sequoia." The
+# NOTE: I skipped from macOS 13 "Ventura" straight to 15 "Sequoia." The
 # operations that consider $OS_MAJOR_VERSION might not be 100% accurate for
 # those in-between releases.
 OS_MAJOR_VERSION="$(sw_vers -productVersion | sed -nr 's/^([0-9]+).*/\1/p')"
@@ -78,16 +78,16 @@ sudo -n true || exit
 # ====================
 
 # Try to hit as many paths as possible to satisfy prompts within $HOME.
-# Apparently not so necessary starting between 13.0 and 15.0?
+# Apparently not so necessary starting around 13.0?
 echo "Poking around in ${HOME}; please allow access at each prompt..."
 find "$HOME" > /dev/null 2>&1
 
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
-# [15.0] System Settings > Privacy & Security > FileVault > Turn On...
+# [13.7] System Settings > Privacy & Security > FileVault > Turn On...
 sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
 
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop = Black
-# [15.0] System Settings > Wallpaper > Black
+# [13.7] System Settings > Wallpaper > Black
 osascript -e 'tell application "System Events" to tell every desktop to set picture to "/System/Library/Desktop Pictures/Solid Colors/Black.png" as POSIX file'
 
 # ====================
@@ -105,6 +105,7 @@ curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola
 
 # Install user profile and background banner images
 curl -fL "${SELF_URL}/data/pictures/profile{,-bg}.jpg" -o "${HOME}/Pictures/profile#1.jpg"
+curl -fL "${SELF_URL}/data/pictures/bliss.jpg" -o "${HOME}/Pictures/bliss.jpg"
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC="$(mktemp)"
@@ -130,7 +131,9 @@ if [ "$INCLUDE_SOFTWARE_UPDATE" = 'true' ]; then
     fi
 
     # Install any software updates currently available
-    softwareupdate --install --all
+    # TODO partially disabled for now because I don't want the next macOS major version
+    # softwareupdate --install --all
+    softwareupdate --install --safari-only
 fi
 
 set -x
@@ -141,63 +144,59 @@ set -x
 # ====================
 
 # [12.5] General > Appearance = Dark
-# [15.0] Appearance > Appearance = Dark
+# [13.7] Appearance > Appearance = Dark
 defaults write -g AppleInterfaceStyle -string 'Dark'
 
 # [12.5] General > Accent color = Graphite
-# [15.0] Appearance > Accent color = Graphite
+# [13.7] Appearance > Accent color = Graphite
 # [12.5] General > Highlight color = Graphite
-# [15.0] Appearance > Highlight color = Graphite
+# [13.7] Appearance > Highlight color = Graphite
 defaults write -g AppleAccentColor -int '-1'
 defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
-# [15.0] Lock Screen > Start Screen Saver when inactive = Never (otherwise, 10 mins)
+# [13.7] Lock Screen > Start Screen Saver when inactive = Never (otherwise, 10 mins)
 defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
-# TODO broke
-#defaults -currentHost write com.apple.screensaver moduleDict -dict \
-#    moduleName -string 'After Dark Flying Toasters' \
-#    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
-#    type -int '0'
+# [13.7] Screen Saver > Choose "After Dark: Flying Toasters"
+defaults -currentHost write com.apple.screensaver moduleDict -dict \
+    moduleName -string 'After Dark Flying Toasters' \
+    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
+    type -int '0'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Right = Disable Screen Saver
-# [15.0] Desktop & Dock > Hot Corners... > Bottom Right = Disable Screen Saver
+# [13.7] Desktop & Dock > Hot Corners... > Bottom Right = Disable Screen Saver
 defaults write com.apple.dock wvous-br-corner -int '6'
 defaults write com.apple.dock wvous-br-modifier -int '0'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Left = Start Screen Saver
-# [15.0] Desktop & Dock > Hot Corners... > Bottom Left = Start Screen Saver
+# [13.7] Desktop & Dock > Hot Corners... > Bottom Left = Start Screen Saver
 defaults write com.apple.dock wvous-bl-corner -int '5'
 defaults write com.apple.dock wvous-bl-modifier -int '0'
 
 # [12.5] Dock & Menu Bar > Dock & Menu Bar > Automatically hide and show the Dock = on
-# [15.0] Desktop & Dock > Dock > Automatically hide and show the Dock = on
+# [13.7] Desktop & Dock > Dock > Automatically hide and show the Dock = on
 defaults write com.apple.dock autohide -bool 'true'
 
 # [12.5] Dock & Menu Bar > Dock & Menu Bar > Show recent applications in Dock = off
-# [15.0] Desktop & Dock > Dock > Show suggested and recent apps in Dock = off
+# [13.7] Desktop & Dock > Dock > Show recent applications in Dock = off
 defaults write com.apple.dock show-recents -bool 'false'
 
-# [15.0] Control Center > Control Center Modules > ...
-# Order: [focus] [display] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
-    # Blank out any existing menu bar arrangement
+# [13.7] Control Center > Control Center Modules > ...
+    # Blank out any existing menu bar arrangement aside from the bare essentials
     defaults write com.apple.controlcenter '<dict>
         <key>NSStatusItem Visible Clock</key>
         <true/>
         <key>NSStatusItem Visible BentoBox</key>
         <true/>
-        <key>NSStatusItem Preferred Position BentoBox</key>
-        <integer>128</integer>
     </dict>'
 
     # Wi-Fi = Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter WiFi -int '2'
     defaults write com.apple.controlcenter 'NSStatusItem Visible WiFi' -bool 'true'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position WiFi' -int '192'
 
     # Bluetooth = Don't Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter Bluetooth -int '8'
@@ -210,7 +209,6 @@ defaults write com.apple.dock show-recents -bool 'false'
     # Focus = Show When Active
     defaults -currentHost write com.apple.controlcenter FocusModes -int '2'
     defaults write com.apple.controlcenter 'NSStatusItem Visible FocusModes' -bool 'false'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position FocusModes' -int '320'
 
     # Stage Manager = Don't Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter StageManager -int '8'
@@ -219,10 +217,11 @@ defaults write com.apple.dock show-recents -bool 'false'
     # Screen Mirroring = Show When Active
     defaults -currentHost write com.apple.controlcenter ScreenMirroring -int '2'
     defaults write com.apple.controlcenter 'NSStatusItem Visible ScreenMirroring' -bool 'false'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position ScreenMirroring' -int '288'
-    if [ "$OS_MAJOR_VERSION" -le "13" ]; then
+    if [ "$OS_MAJOR_VERSION" -le "12" ]; then
         # [12.5] Dock & Menu Bar > Screen Mirroring > Show in Menu Bar = off
         defaults write com.apple.airplay showInMenuBarIfPresent -bool 'false'
+    else
+        defaults write com.apple.airplay showInMenuBarIfPresent -bool 'true'
     fi
 
     # Display = Don't Show in Menu Bar
@@ -232,14 +231,12 @@ defaults write com.apple.dock show-recents -bool 'false'
     # Sound = Always Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter Sound -int '18'
     defaults write com.apple.controlcenter 'NSStatusItem Visible Sound' -bool 'true'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Sound' -int '160'
 
     # Now Playing = Show When Active
     defaults -currentHost write com.apple.controlcenter NowPlaying -int '2'
     defaults write com.apple.controlcenter 'NSStatusItem Visible NowPlaying' -bool 'false'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position NowPlaying' -int '256'
 
-# [15.0] Control Center > Other Modules > ...
+# [13.7] Control Center > Other Modules > ...
     # Accessibility Shortcuts = Show in Menu Bar = off; Show in Control Center = off
     defaults -currentHost write com.apple.controlcenter AccessibilityShortcuts -int '12'
     defaults write com.apple.controlcenter 'NSStatusItem Visible AccessibilityShortcuts' -bool 'false'
@@ -247,12 +244,13 @@ defaults write com.apple.dock show-recents -bool 'false'
     # Battery = Show in Menu Bar = on; Show in Control Center = off; Show Percentage = on
     defaults -currentHost write com.apple.controlcenter Battery -int '6'
     defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -bool 'true'
-    defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Battery' -int '224'
     defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool 'true'
 
-    # Music Recognition = Show in Menu Bar = off; Show in Control Center = off
-    defaults -currentHost write com.apple.controlcenter MusicRecognition -int '12'
-    defaults write com.apple.controlcenter 'NSStatusItem Visible MusicRecognition' -bool 'false'
+    if [ "$OS_MAJOR_VERSION" -ge "15" ]; then
+        # [15.0] Music Recognition = Show in Menu Bar = off; Show in Control Center = off
+        defaults -currentHost write com.apple.controlcenter MusicRecognition -int '12'
+        defaults write com.apple.controlcenter 'NSStatusItem Visible MusicRecognition' -bool 'false'
+    fi
 
     # Hearing = Show in Menu Bar = off; Show in Control Center = off
     defaults -currentHost write com.apple.controlcenter Hearing -int '12'
@@ -266,13 +264,22 @@ defaults write com.apple.dock show-recents -bool 'false'
     defaults -currentHost write com.apple.controlcenter KeyboardBrightness -int '12'
     defaults write com.apple.controlcenter 'NSStatusItem Visible KeyboardBrightness' -bool 'false'
 
-# [15.0] Control Center > Menu Bar Only > ...
+# [13.7] Control Center > Menu Bar Only > ...
     # Spotlight = Don't Show in Menu Bar
     defaults -currentHost write com.apple.Spotlight MenuItemHidden -bool 'true'
 
     # Siri = Don't Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter Siri -int '8'
     Defaults write com.apple.Siri StatusMenuVisible -bool 'false'
+
+# [13.7] Menu bar sort: [focus] [mirroring] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position BentoBox' -int '128'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Sound' -int '160'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position WiFi' -int '192'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Battery' -int '224'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position NowPlaying' -int '256'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position ScreenMirroring' -int '288'
+defaults write com.apple.controlcenter 'NSStatusItem Preferred Position FocusModes' -int '320'
 
 killall ControlCenter
 
@@ -285,33 +292,35 @@ else
 fi
 
 # [12.5] Dock & Menu Bar > Clock > Display the time with seconds = on
-# [15.0] Control Center > Menu Bar Only > Clock Options... > Time > Display the time with seconds = on
+# [13.7] Control Center > Menu Bar Only > Clock Options... > Time > Display the time with seconds = on
 defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
 
 # [12.5] Notifications & Focus > Notifications > Allow notifications when the display is sleeping = on
-# [15.0] Notifications > Notification Center > Allow notifications when the display is sleeping = on
-# TODO broke
-#PLIST='<?xml version="1.0" encoding="UTF-8"?>
-#<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-#<plist version="1.0">
-#<dict>
-#    <key>dndDisplayLock</key>
-#    <true/>
-#    <key>dndDisplaySleep</key>
-#    <false/>
-#    <key>dndMirrored</key>
-#    <true/>
-#    <key>facetimeCanBreakDND</key>
-#    <false/>
-#    <key>playSoundsForForwardedNotifications</key>
-#    <true/>
-#    <key>repeatedFacetimeCallsBreaksDND</key>
-#    <false/>
-#    <key>summarizeNotifications</key>
-#    <true/>
-#</dict>
-#</plist>'
-#defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
+# [13.7] Notifications > Notification Center > ...
+#   - Allow notifications when the display is sleeping = on
+#   - Allow notifications when the screen is locked = off
+#   - Allow notifications when mirroring or sharing the display = off
+PLIST='<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>dndDisplayLock</key>
+    <true/>
+    <key>dndDisplaySleep</key>
+    <false/>
+    <key>dndMirrored</key>
+    <true/>
+    <key>facetimeCanBreakDND</key>
+    <false/>
+    <key>playSoundsForForwardedNotifications</key>
+    <true/>
+    <key>repeatedFacetimeCallsBreaksDND</key>
+    <false/>
+    <key>summarizeNotifications</key>
+    <true/>
+</dict>
+</plist>'
+defaults write com.apple.ncprefs dnd_prefs "$(_make_bplist "$PLIST")"
 
 # [12.6] Users & Groups > [self] > Edit profile picture
 # Cherry-picked from https://apple.stackexchange.com/a/432510
@@ -327,17 +336,17 @@ sudo dsimport "$RECORD" /Local/Default M
 
 # [12.6] Security & Privacy > General > Show a message when the screen is locked = on
 # [12.6] Security & Privacy > General > Set Lock Message...
-# [15.0] Lock Screen > Show message when locked = on
-# [15.0] Lock Screen > Show message when locked > Set...
+# [13.7] Lock Screen > Show message when locked = on
+# [13.7] Lock Screen > Show message when locked > Set...
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText \
     "'If found, please contact:\nscott@smitelli.com\n+1 (909) 764-8354'"
 
-if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.6] Security & Privacy > Firewall > Turn On Firewall
     sudo defaults write /Library/Preferences/com.apple.alf globalstate -int '1'
     sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
 else
-    # [15.0] Network > Firewall > on
+    # [13.7] Network > Firewall > on
     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 fi
 
@@ -354,16 +363,17 @@ sudo nvram StartupMute=%01
 # [12.5] Sound > Input > Input volume = 75%
 osascript -e 'set volume input volume 75'
 
-# [12.5] Keyboard > Keyboard > Key repeat = 7/7
+# [13.7] Keyboard > Key repeat rate = 7/7
 defaults write -g KeyRepeat -int '2'
 
-# [12.5] Keyboard > Keyboard > Delay Until Repeat = 4/5
+# [13.7] Keyboard > Delay until repeat = 4/5
 defaults write -g InitialKeyRepeat -int '25'
 
-# [12.5] Keyboard > Keyboard > Press fn/Globe key to = Do Nothing
+# [12.5] Keyboard > Press fn/Globe key to = Do Nothing
 defaults write com.apple.HIToolbox AppleFnUsageType -int '0'
 
 # [12.6] Keyboard > Keyboard > Customize Control Strip
+# [13.7] Keyboard > Touch Bar Settings... > Customize Control Strip...
 defaults write com.apple.controlstrip FullCustomized -array \
     -string 'com.apple.system.group.brightness' \
     -string 'com.apple.system.mission-control' \
@@ -383,33 +393,35 @@ defaults write com.apple.textInput.keyboardServices.textReplacement KSSampleShor
 defaults write -g NSUserDictionaryReplacementItems '()'
 
 # [12.6] Keyboard > Shortcuts > Use keyboard navigation to move focus between controls = on
-# [15.0] Keyboard > Keyboard navigation = on
+# [13.7] Keyboard > Keyboard navigation = on
 # TODO Figure out differences between 2 (from SysPrefs) and 3 (from randos)
 defaults write -g AppleKeyboardUIMode -int '3'
 
 # [12.5] Keyboard > Text > Correct spelling automatically = off
-# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Correct spelling automatically = off
+# [13.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Correct spelling automatically = off
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool 'false'
 defaults write -g WebAutomaticSpellingCorrectionEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Capitalize words automatically = off
-# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Capitalize words automatically = off
+# [13.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Capitalize words automatically = off
 defaults write -g NSAutomaticCapitalizationEnabled -bool 'false'
 
-# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Show inline predictive text = off
-defaults write -g NSAutomaticInlinePredictionEnabled -bool 'false'
+if [ "$OS_MAJOR_VERSION" -ge "15" ]; then
+    # [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Show inline predictive text = off
+    defaults write -g NSAutomaticInlinePredictionEnabled -bool 'false'
+fi
 
 # [12.5] Keyboard > Text > Add period with double-space = off
-# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Add period with double-space = off
+# [13.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Add period with double-space = off
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool 'false'
 
 # [12.5] Keyboard > Text > Use smart quotes and dashes = off
-# [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Use smart quotes and dashes = off
+# [13.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Use smart quotes and dashes = off
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool 'false'
 defaults write -g NSAutomaticDashSubstitutionEnabled -bool 'false'
 
 # [12.6] Keyboard > Text > Touch Bar typing suggestions = off
-# [15.0] Keyboard > Touch Bar Settings > Show typing suggestions = off
+# [13.7] Keyboard > Touch Bar Settings > Show typing suggestions = off
 defaults write -g NSAutomaticTextCompletionEnabled -bool 'false'
 
 # [12.6] Trackpad > Point & Click > Tap to click = on
@@ -424,25 +436,26 @@ defaults write -g com.apple.trackpad.scaling -float '1'
 defaults write com.apple.dock showAppExposeGestureEnabled -bool 'true'
 
 # [12.5] Battery > Battery > Turn display off after = 10m
-# [15.0] Lock Screen > Turn display off on battery when inactive = For 10 minutes
+# [13.7] Lock Screen > Turn display off on battery when inactive = For 10 minutes
 sudo pmset -b displaysleep 10
 
 # [12.5] Battery > Power Adapter > Turn display off after = Never
-# [15.0] Lock Screen > Turn display off on power adapter when inactive = Never
+# [13.7] Lock Screen > Turn display off on power adapter when inactive = Never
 sudo pmset -c displaysleep 0
 
 # [12.5] Battery > Power Adapter > Prevent your Mac from automatically sleeping when the display is off = on
+# [13.7] Displays > Advanced... > Prevent automatic sleeping on power adapter when the display is off = on
 # [15.0] Battery > Options > Prevent automatic sleeping on power adapter when the display is off = on
 sudo pmset -c sleep 0
 
 # [12.5] Sharing > Computer Name = ...
-# [15.0] General > About > Name
-# [15.0] General > Sharing > Local hostname > Edit...
+# [13.7] General > About > Name
+# [13.7] General > Sharing > Local hostname > Edit...
 sudo scutil --set LocalHostName "$SET_HOSTNAME"
 sudo scutil --set ComputerName "$SET_HOSTNAME"
 dscacheutil -flushcache
 
-if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Sharing > AirPlay Receiver = off
     defaults -currentHost write com.apple.controlcenter AirplayRecieverEnabled -bool 'false'
 fi
@@ -464,20 +477,20 @@ sudo bioutil --system --write --timeout 172800
 # ====================
 
 # [12.5] Preferences > General > Show these items on the desktop > Hard disks = on
-# [15.0] Settings > General > Show these items on the desktop > Hard disks = on
+# [13.7] Settings > General > Show these items on the desktop > Hard disks = on
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool 'true'
 
 # [12.5] Preferences > General > Show these items on the desktop > Connected servers = on
-# [15.0] Settings > General > Show these items on the desktop > Connected servers = on
+# [13.7] Settings > General > Show these items on the desktop > Connected servers = on
 defaults write com.apple.finder ShowMountedServersOnDesktop -bool 'true'
 
 # [12.5] Preferences > General > New finder windows show = home directory
-# [15.0] Settings > General > New finder windows show = home directory
+# [13.7] Settings > General > New finder windows show = home directory
 defaults write com.apple.finder NewWindowTarget -string 'PfHm'
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Favorites
-# [15.0] Settings > Sidebar > Show these items in the sidebar > Favorites
+# [13.7] Settings > Sidebar > Show these items in the sidebar > Favorites
 mysides remove all
 mysides add Applications 'file:///Applications/'
 mysides add "$(logname)" "file://${HOME}/"
@@ -489,19 +502,19 @@ mysides add Music "file://${HOME}/Music/"
 mysides add Pictures "file://${HOME}/Pictures/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
-# [15.0] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
+# [13.7] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 defaults write com.apple.finder ShowRecentTags -bool 'false'
 
 # [12.5] Preferences > Advanced > Show all filename extensions = on
-# [15.0] Settings > Advanced > Show all filename extensions = on
+# [13.7] Settings > Advanced > Show all filename extensions = on
 defaults write -g AppleShowAllExtensions -bool 'true'
 
 # [12.5] Preferences > Advanced > Keep folders on top > In windows when sorting by name = on
-# [15.0] Settings > Advanced > Keep folders on top > In windows when sorting by name = on
+# [13.7] Settings > Advanced > Keep folders on top > In windows when sorting by name = on
 defaults write com.apple.finder _FXSortFoldersFirst -bool 'true'
 
 # [12.5] Preferences > Advanced > When performing a search = Search the Current Folder
-# [15.0] Settings > Advanced > When performing a search = Search the Current Folder
+# [13.7] Settings > Advanced > When performing a search = Search the Current Folder
 defaults write com.apple.finder FXDefaultSearchScope -string 'SCcf'
 
 # [12.6] File > Get Info > Expand General, More Info, Name & Extension, Comments,
@@ -572,11 +585,11 @@ defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
 # Font Book
 # ====================
 
-if [ "$OS_MAJOR_VERSION" -le "14" ]; then
+if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Preferences > Default Install Location = Computer
     defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
 else
-    # [15.0] Settings > Installation > Default install location = All Users
+    # [13.7] Settings > Installation > Default install location = All Users
     defaults write com.apple.FontBook installLocation -int '-2'
 fi
 
@@ -598,8 +611,7 @@ defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
 # Safari
 # ====================
 
-# [18.0] Settings > Advanced > Show features for web developers
-# TODO check this one again
+# [16.6] Settings > Advanced > Show features for web developers
 defaults write com.apple.Safari IncludeDevelopMenu -bool 'true'
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool 'true'
 defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool 'true'
@@ -794,11 +806,11 @@ defaults write com.apple.Terminal 'Window Settings' -dict-add "$PROFILE_NAME" "<
 </dict>"
 
 # [12.5] Preferences > General > On startup, open new window with profile = [profile]
-# [15.0] Settings > General > On startup, open new window with profile = [profile]
+# [13.7] Settings > General > On startup, open new window with profile = [profile]
 defaults write com.apple.Terminal 'Startup Window Settings' -string "$PROFILE_NAME"
 
 # [12.5] Preferences > Profiles > Set [profile] as Default
-# [15.0] Settings > Profiles > Set [profile] as Default
+# [13.7] Settings > Profiles > Set [profile] as Default
 defaults write com.apple.Terminal 'Default Window Settings' -string "$PROFILE_NAME"
 
 # [12.6] View > Hide Marks
@@ -853,20 +865,24 @@ fi
 # KeePassXC
 # ====================
 
-# Install skeleton INI files to initialize configuration
-curl -fL --create-dirs "${SELF_URL}/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
-curl -fL --create-dirs "${SELF_URL}/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
+if [ -e '/Applications/KeePassXC.app' ]; then
+    # Install skeleton INI files to initialize configuration
+    curl -fL --create-dirs "${SELF_URL}/keepassxc/application-support.ini" -o "${HOME}/Library/Application Support/KeePassXC/keepassxc.ini"
+    curl -fL --create-dirs "${SELF_URL}/keepassxc/caches.ini" -o "${HOME}/Library/Caches/KeePassXC/keepassxc.ini"
+fi
 
 # ====================
 # VLC
 # ====================
 
-# [3.0.17] First Run > Check for album art and metadata? > [don't care enough here]
-defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
+if [ -e '/Applications/VLC.app' ]; then
+    # [3.0.17] First Run > Check for album art and metadata? > [don't care enough here]
+    defaults write org.videolan.vlc VLCFirstRun -string "$(date -u '+%Y-%m-%d %H:%M:%S %z')"
 
-# [3.0.17] First Run > Check for updates automatically? = Check Automatically
-defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'true'
-defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
+    # [3.0.17] First Run > Check for updates automatically? = Check Automatically
+    defaults write org.videolan.vlc SUEnableAutomaticChecks -bool 'true'
+    defaults write org.videolan.vlc SUHasLaunchedBefore -bool 'true'
+fi
 
 # ====================
 # QLMarkdown
