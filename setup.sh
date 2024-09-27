@@ -94,7 +94,7 @@ sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recover
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" < /dev/null
 
 # Install utilities that are required for this script
-brew install dockutil git mysides stow
+brew install coreutils dockutil git mysides stow
 
 # Install Consolas font family system-wide
 curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
