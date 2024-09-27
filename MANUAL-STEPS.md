@@ -74,6 +74,9 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + Open Firefox at least once to initialize and fill the profile directory
     + `bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/firefox/setup.sh)"`
     + Follow the output of the script to finish installing add-ons
+- Sublime Text 4
+    + Open Sublime Text 4 at least once to initialize and fill the profile directory
+    + `~/.scottfiles/st4/setup.sh`
 
 ## Property List Reading/Dumping Stuff
 
