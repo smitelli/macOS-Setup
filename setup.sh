@@ -119,7 +119,7 @@ rm -rf "${HOME}/.scottfiles"
 git clone https://github.com/smitelli/scottfiles.git "${HOME}/.scottfiles"
 pushd "${HOME}/.scottfiles"
 git remote set-url origin git@github.com:smitelli/scottfiles.git
-stow aliases bash colors converters editor gdb git homebrew macos prompt tmux
+stow aliases bash colors converters editor gdb git homebrew macos prompt tmux zsh
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     mkdir -p "${HOME}/bin"
     stow worktools
