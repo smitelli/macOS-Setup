@@ -4,9 +4,6 @@
 # Parse environment
 # ====================
 
-# NOTE: I skipped from macOS 13 "Ventura" straight to 15 "Sequoia." The
-# operations that consider $OS_MAJOR_VERSION might not be 100% accurate for
-# those in-between releases.
 OS_MAJOR_VERSION="$(sw_vers -productVersion | sed -nr 's/^([0-9]+).*/\1/p')"
 SET_HOSTNAME="${SET_HOSTNAME:-$(scutil --get LocalHostName)}"
 INCLUDE_SOFTWARE_UPDATE="${INCLUDE_SOFTWARE_UPDATE:-true}"
@@ -63,6 +60,7 @@ SELF_URL='https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD'
 sudo -v
 
 # ... and (unsafely, lazily) refresh it every 50 seconds until killed.
+# TODO I really think brew is expiring this each time it runs, or something
 while sleep 50; do sudo -v; done &
 
 # If we don't have sudo at this point, no reason to continue
@@ -105,6 +103,7 @@ curl -fL "${SELF_URL}/data/pictures/bliss.jpg" -o "${HOME}/Pictures/Bliss.jpg"
 
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop = Bliss.jpg
 # [13.7] System Settings > Wallpaper > Bliss.jpg
+# TODO Show on all Spaces
 osascript -e "tell application \"System Events\" to tell every desktop to \
     set picture to \"${HOME}/Pictures/Bliss.jpg\" as POSIX file"
 
@@ -161,12 +160,13 @@ defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphi
 defaults write com.apple.universalaccess reduceTransparency -bool 'true'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
-# [13.7] Lock Screen > Start Screen Saver when inactive = Never (otherwise, 10 mins)
+# [13.7] Lock Screen > Start Screen Saver when inactive = Never
 defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
 # [13.7] Screen Saver > Choose "After Dark: Flying Toasters"
+# TODO broke in 14
 defaults -currentHost write com.apple.screensaver moduleDict -dict \
     moduleName -string 'After Dark Flying Toasters' \
     path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
@@ -188,6 +188,7 @@ defaults write com.apple.dock autohide -bool 'true'
 
 # [12.5] Dock & Menu Bar > Dock & Menu Bar > Show recent applications in Dock = off
 # [13.7] Desktop & Dock > Dock > Show recent applications in Dock = off
+# [14.7] Desktop & Dock > Dock > Show suggested and recent apps in Dock = off
 defaults write com.apple.dock show-recents -bool 'false'
 
 # [13.7] Control Center > Control Center Modules > ...
@@ -251,8 +252,8 @@ defaults write com.apple.dock show-recents -bool 'false'
     defaults write com.apple.controlcenter 'NSStatusItem Visible Battery' -bool 'true'
     defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool 'true'
 
-    if [ "$OS_MAJOR_VERSION" -ge "15" ]; then
-        # [15.0] Music Recognition = Show in Menu Bar = off; Show in Control Center = off
+    if [ "$OS_MAJOR_VERSION" -ge "14" ]; then
+        # [14.7] Music Recognition = Show in Menu Bar = off; Show in Control Center = off
         defaults -currentHost write com.apple.controlcenter MusicRecognition -int '12'
         defaults write com.apple.controlcenter 'NSStatusItem Visible MusicRecognition' -bool 'false'
     fi
@@ -335,10 +336,6 @@ RECORD="$(mktemp)"
 echo -e "0x0A 0x5C 0x3A 0x2C dsRecTypeStandard:Users 2 dsAttrTypeStandard:RecordName externalbinary:dsAttrTypeStandard:JPEGPhoto\n$(logname):${HOME}/Pictures/profile.jpg" > "$RECORD"
 sudo dsimport "$RECORD" /Local/Default M
 
-# [12.5] Users & Groups > [self] > Advanced Options... > Login shell = /bin/bash
-# TODO The world is dragging me kicking and screaming to zsh
-# sudo chsh -s /bin/bash "$(logname)"
-
 # [12.6] Security & Privacy > General > Show a message when the screen is locked = on
 # [12.6] Security & Privacy > General > Set Lock Message...
 # [13.7] Lock Screen > Show message when locked = on
@@ -411,8 +408,8 @@ defaults write -g WebAutomaticSpellingCorrectionEnabled -bool 'false'
 # [13.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Capitalize words automatically = off
 defaults write -g NSAutomaticCapitalizationEnabled -bool 'false'
 
-if [ "$OS_MAJOR_VERSION" -ge "15" ]; then
-    # [15.0] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Show inline predictive text = off
+if [ "$OS_MAJOR_VERSION" -ge "14" ]; then
+    # [14.7] Keyboard > Text Input > Input Sources > Edit... > All Input Sources > Show inline predictive text = off
     defaults write -g NSAutomaticInlinePredictionEnabled -bool 'false'
 fi
 
@@ -450,7 +447,7 @@ sudo pmset -c displaysleep 0
 
 # [12.5] Battery > Power Adapter > Prevent your Mac from automatically sleeping when the display is off = on
 # [13.7] Displays > Advanced... > Prevent automatic sleeping on power adapter when the display is off = on
-# [15.0] Battery > Options > Prevent automatic sleeping on power adapter when the display is off = on
+# [14.7] Battery > Options > Prevent automatic sleeping on power adapter when the display is off = on
 sudo pmset -c sleep 0
 
 # [12.5] Sharing > Computer Name = ...
@@ -836,6 +833,7 @@ fi
 
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
+# TODO quicklook-json got stepped on
 brew install --no-quarantine qlmarkdown quicklook-json syntax-highlight
 xattr -dr com.apple.quarantine "${HOME}"/Library/QuickLook/*.qlgenerator
 qlmanage -r
