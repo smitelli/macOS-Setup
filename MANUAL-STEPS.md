@@ -6,7 +6,7 @@
 - Select Your Country or Region = **United States**
 - Accessibility = Not Now
 - Select Your Wi-Fi Network = ...
-- Migration Assistant = Not Now
+- Migration Assistant = Not now
 - Sign In with Your Apple ID = Set Up Later; Skip
 - Terms and Conditions = Agree; Agree
 - Create a Computer Account
