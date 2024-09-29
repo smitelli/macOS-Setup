@@ -109,9 +109,15 @@ osascript -e "tell application \"System Events\" to tell every desktop to \
 
 # Install the After Dark Flying Toasters replica screen saver
 ZIPSRC="$(mktemp)"
-curl -fL "${SELF_URL}/data/adftss.zip" -o "$ZIPSRC"
-unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
-xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
+if [ "$OS_MAJOR_VERSION" -le "13" ]; then
+    curl -fL "${SELF_URL}/data/adftss.zip" -o "$ZIPSRC"
+    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
+    xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
+else
+    curl -fL "${SELF_URL}/data/adftss2.zip" -o "$ZIPSRC"
+    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
+    xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/Flying Toasters.saver"
+fi
 
 # Install Scottfiles
 rm -rf "${HOME}/.scottfiles"
@@ -166,11 +172,17 @@ defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
 # [13.7] Screen Saver > Choose "After Dark: Flying Toasters"
-# TODO broke in 14
-defaults -currentHost write com.apple.screensaver moduleDict -dict \
-    moduleName -string 'After Dark Flying Toasters' \
-    path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
-    type -int '0'
+if [ "$OS_MAJOR_VERSION" -le "13" ]; then
+    defaults -currentHost write com.apple.screensaver moduleDict -dict \
+        moduleName -string 'After Dark Flying Toasters' \
+        path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
+        type -int '0'
+else
+    defaults -currentHost write com.apple.screensaver moduleDict -dict \
+        moduleName -string 'Flying Toasters' \
+        path -string "${HOME}/Library/Screen Savers/Flying Toasters.saver" \
+        type -int '0'
+fi
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Hot Corners... > Bottom Right = Disable Screen Saver
 # [13.7] Desktop & Dock > Hot Corners... > Bottom Right = Disable Screen Saver
@@ -199,6 +211,7 @@ defaults write com.apple.dock show-recents -bool 'false'
         <key>NSStatusItem Visible BentoBox</key>
         <true/>
     </dict>'
+    sleep 2  # Paper over occasional unreliability here
 
     # Wi-Fi = Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter WiFi -int '2'
@@ -279,6 +292,7 @@ defaults write com.apple.dock show-recents -bool 'false'
     Defaults write com.apple.Siri StatusMenuVisible -bool 'false'
 
 # [13.7] Menu bar sort: [focus] [mirroring] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
+sleep 2
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position BentoBox' -int '128'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Sound' -int '160'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position WiFi' -int '192'
@@ -286,8 +300,10 @@ defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Battery'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position NowPlaying' -int '256'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position ScreenMirroring' -int '288'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position FocusModes' -int '320'
+sleep 2
 
 killall ControlCenter
+sleep 2
 
 if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     # [12.5] Dock & Menu Bar > Clock > Show date = never
