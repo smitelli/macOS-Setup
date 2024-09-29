@@ -103,7 +103,7 @@ curl -fL "${SELF_URL}/data/pictures/bliss.jpg" -o "${HOME}/Pictures/Bliss.jpg"
 
 # [12.6] System Preferences > Desktop & Screen Saver > Desktop = Bliss.jpg
 # [13.7] System Settings > Wallpaper > Bliss.jpg
-# TODO Show on all Spaces
+# TODO Show on all Spaces = on
 osascript -e "tell application \"System Events\" to tell every desktop to \
     set picture to \"${HOME}/Pictures/Bliss.jpg\" as POSIX file"
 
@@ -172,6 +172,7 @@ defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
 # [12.6] Desktop & Screen Saver > Screen Saver > Choose "After Dark: Flying Toasters"
 # [13.7] Screen Saver > Choose "After Dark: Flying Toasters"
+# TODO Show on all Spaces = on
 if [ "$OS_MAJOR_VERSION" -le "13" ]; then
     defaults -currentHost write com.apple.screensaver moduleDict -dict \
         moduleName -string 'After Dark Flying Toasters' \
