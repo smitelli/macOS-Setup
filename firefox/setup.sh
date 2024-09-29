@@ -22,8 +22,8 @@ echo
 echo '===================='
 echo
 echo 'Firefox is now set up. Install the following add-ons manually:'
-echo '  - https://addons.mozilla.org/en-US/firefox/addon/privacy-badger17/ [allow in Private Windows = on]'
-echo '  - https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/ [allow in Private Windows = on]'
+echo '  - https://addons.mozilla.org/en-US/firefox/addon/privacy-badger17/ [Run in Private Windows = on]'
+echo '  - https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/ [Run in Private Windows = on]'
 echo '    - Click "More" until the window widens'
 echo '    - Activate all "Cookie notices" filter lists'
 echo '    - Activate all "Annoyances" filter lists'
