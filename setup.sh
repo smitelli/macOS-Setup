@@ -179,6 +179,7 @@ if [ "$OS_MAJOR_VERSION" -le "13" ]; then
         path -string "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver" \
         type -int '0'
 else
+    # TODO doesn't work
     defaults -currentHost write com.apple.screensaver moduleDict -dict \
         moduleName -string 'Flying Toasters' \
         path -string "${HOME}/Library/Screen Savers/Flying Toasters.saver" \
