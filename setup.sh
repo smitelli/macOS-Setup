@@ -851,7 +851,6 @@ fi
 
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
-# TODO quicklook-json got stepped on
 brew install --no-quarantine qlmarkdown syntax-highlight
 xattr -dr com.apple.quarantine "${HOME}"/Library/QuickLook/*.qlgenerator
 qlmanage -r

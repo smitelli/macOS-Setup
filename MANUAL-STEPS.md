@@ -1,6 +1,6 @@
 # Manual Steps
 
-## From-Scratch Installation (15.0)
+## From-Scratch Installation (14.0)
 
 - Language = **English**
 - Select Your Country or Region = **United States**
@@ -24,21 +24,20 @@
 
 Once at the desktop, open Terminal.app and follow instructions from the README.
 
-## Post-Bootstrap Settings (12.6)
+## Post-Bootstrap Settings (14.0)
 
-- System Preferences
+- System Settings
     + **Sign In** to Apple ID
         * Allow Find My Mac to use the location of this Mac? = **Allow**
     + Apple ID
         * iCloud > Enable all except:
-            - **Private Relay**
-            - **Hide My Email**
             - **iCloud Mail**
+            - **Notes**
             - **Contacts**
             - **Calendars**
-            - **Notes**
+            - **Private Relay**
             - (If work computer, disable _everything_ except **Find My Mac**)
-        * Media & Purchases > Account: ... > Manage... > **Log into the App Store**
+        * iCloud > Optimize Mac Storage = off
     + Internet Accounts > Add **Gmail**:
         * Details... > Description = email address
         * Enable (at a minimum) **Contacts**
@@ -46,8 +45,8 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
         * Make sure Contacts.app is set up with the correct account
         * Card > Make This My Card
         * Remove any incorrect entries that refer to the current user
-    + Security & Privacy > General > Require password ... after sleep or screen saver begins = **immediately**
-    + Software Update > Advanced... > Install system data files and security updates = **off**
+    + Lock Screen > Require password after screen saver begins or display is turned off = **immediately**
+    + General > Software Update > Advanced... > Install Security Responses and system files = **off**
     + Network > Thunderbolt Bridge > **Remove** (if not being used)
     + Touch ID > Add fingerprints:
         1. **RH Index**
@@ -64,7 +63,7 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + Weather > Forecast (L)
         * Location: My Location
 - Finder
-    + Preferences > Sidebar
+    + Settings > Sidebar
         * AirDrop = **on**
         * iCloud Drive = **off**
         * Shared = **off**
