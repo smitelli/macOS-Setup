@@ -602,16 +602,11 @@ fi
 defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
 
 # ====================
-# Font Book
+# Contacts
 # ====================
 
-if [ "$OS_MAJOR_VERSION" -le "12" ]; then
-    # [12.5] Preferences > Default Install Location = Computer
-    defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
-else
-    # [13.7] Settings > Installation > Default install location = All Users
-    defaults write com.apple.FontBook installLocation -int '-2'
-fi
+# [14.7] Settings > General > Sort By = First Name
+defaults write com.apple.AddressBook ABNameSortingFormat -string 'sortingFirstName sortingLastName'
 
 # ====================
 # Disk Utility
@@ -626,6 +621,18 @@ defaults write com.apple.DiskUtility SidebarShowAllDevices -bool 'true'
 
 # [12.5] View > Show APFS Snapshots
 defaults write com.apple.DiskUtility WorkspaceShowAPFSSnapshots -bool 'true'
+
+# ====================
+# Font Book
+# ====================
+
+if [ "$OS_MAJOR_VERSION" -le "12" ]; then
+    # [12.5] Preferences > Default Install Location = Computer
+    defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
+else
+    # [13.7] Settings > Installation > Default install location = All Users
+    defaults write com.apple.FontBook installLocation -int '-2'
+fi
 
 # ====================
 # Safari

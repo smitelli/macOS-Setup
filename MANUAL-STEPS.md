@@ -95,6 +95,7 @@ dump_defaults() {
     defaults -host localhost read
 }
 dump_defaults > /tmp/before; read -sp $'?\n' -n1; dump_defaults > /tmp/after; diff /tmp/{before,after}
+# for zsh, use read -sk $'??'
 
 dump_defaults_dumb() {
     sudo find /Library/Preferences -type f -exec echo {} \; -exec plutil -p {} \;
