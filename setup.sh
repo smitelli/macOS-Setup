@@ -90,6 +90,11 @@ sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recover
 
 # Install Homebrew (non-interactively)
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" < /dev/null
+if [ -d /opt/homebrew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 # Install utilities that are required for this script
 brew install coreutils dockutil git mysides stow
@@ -111,11 +116,11 @@ osascript -e "tell application \"System Events\" to tell every desktop to \
 ZIPSRC="$(mktemp)"
 if [ "$OS_MAJOR_VERSION" -le "13" ]; then
     curl -fL "${SELF_URL}/data/adftss.zip" -o "$ZIPSRC"
-    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
+    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers"
     xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/After Dark Flying Toasters.saver"
 else
     curl -fL "${SELF_URL}/data/adftss2.zip" -o "$ZIPSRC"
-    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers/"
+    unzip -uo "$ZIPSRC" -d "${HOME}/Library/Screen Savers"
     xattr -dr com.apple.quarantine "${HOME}/Library/Screen Savers/Flying Toasters.saver"
 fi
 
