@@ -40,8 +40,8 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
             - **iCloud Calendar**
             - (If work computer, disable _everything except_ **Find My Mac**)
         * iCloud+ Features:
+            - Drive > Optimize Mac Storage = **off**
             - Private Relay = **off**
-        * iCloud > Optimize Mac Storage = off
     + Internet Accounts > Add **Gmail**:
         * Details... > Description = email address
         * Enable (at a minimum) **Contacts**
@@ -55,7 +55,7 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
     + Touch ID > Add fingerprints:
         1. **RH Index**
         2. **LH Index**
-        3. **RH thumb**
+        3. **RH Thumb**
     + Keyboard > Text > Remove the **omw** replacement if present
 - Mission Control > Create two desktops on each display
 - Notification Center > Edit Widgets

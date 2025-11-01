@@ -4,6 +4,11 @@ user_pref("browser.startup.page", 3);
 // [106.0] Preferences > General > Tabs > Confirm before quitting with Cmd + Q = off
 user_pref("browser.warnOnQuitShortcut", false);
 
+// [144.0] Preferences > General > Browser Layout > Show sidebar = off
+// [144.0] UNDOCUMENTED > Prefer old-style "bookmarks only" sidebar
+user_pref("sidebar.old-sidebar.has-used", true);
+user_pref("sidebar.revamp", false);
+
 // [106.0] Preferences > Home > New Windows and Tabs > Homepage and new windows = Blank Page
 user_pref("browser.startup.homepage", "about:blank");
 
