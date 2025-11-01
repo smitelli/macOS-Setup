@@ -30,16 +30,17 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
 ## Post-Bootstrap Settings (14.0)
 
 - System Settings
-    + **Sign In** to Apple ID
+    + **Sign In** with your Apple Account
         * Allow Find My Mac to use the location of this Mac? = **Allow**
-    + Apple ID
-        * iCloud > Enable all except:
-            - **iCloud Mail**
+    + Apple Account
+        * iCloud > See All > Enable all except:
             - **Notes**
+            - **iCloud Mail**
             - **Contacts**
-            - **Calendars**
-            - **Private Relay**
-            - (If work computer, disable _everything_ except **Find My Mac**)
+            - **iCloud Calendar**
+            - (If work computer, disable _everything except_ **Find My Mac**)
+        * iCloud+ Features:
+            - Private Relay = **off**
         * iCloud > Optimize Mac Storage = off
     + Internet Accounts > Add **Gmail**:
         * Details... > Description = email address
