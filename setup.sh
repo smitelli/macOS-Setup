@@ -853,7 +853,7 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 # ====================
 
 # Install common apps
-brew install --no-quarantine firefox keepassxc sublime-text vlc
+brew install --no-quarantine firefox git-lfs keepassxc sublime-text vlc
 if [ "$USES_OPENCORE" = 'true' ]; then
     brew install --no-quarantine opencore-patcher
 fi
