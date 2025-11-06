@@ -859,6 +859,8 @@ if [ "$USES_OPENCORE" = 'true' ]; then
 fi
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
     brew install --no-quarantine amazon-chime homebrew/cask/docker google-chrome zoom
+else
+    brew install --no-quarantine obsidian
 fi
 
 # Install some useful Quick Look plugins
@@ -873,6 +875,7 @@ qlmanage -r cache
 dockutil --no-restart --add '/Applications/Firefox.app'
 dockutil --no-restart --add '/System/Applications/Utilities/Terminal.app'
 dockutil --no-restart --add '/Applications/Sublime Text.app'
+[ -e '/Applications/Obsidian.app' ] &&  dockutil --no-restart --add '/Applications/Obsidian.app'
 dockutil --no-restart --add '/Applications/KeePassXC.app'
 dockutil --no-restart --add '/Applications/VLC.app'
 [ -e '/Applications/Amazon Chime.app' ] &&  dockutil --no-restart --add '/Applications/Amazon Chime.app'
