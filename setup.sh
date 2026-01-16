@@ -97,6 +97,7 @@ else
 fi
 
 # Install utilities that are required for this script
+# TODO I can't remember why `coreutils` is needed; maybe try dropping it
 brew install coreutils dockutil git mysides stow
 
 # Install Consolas font family system-wide
