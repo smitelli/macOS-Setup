@@ -82,7 +82,7 @@ find "$HOME" > /dev/null 2>&1
 
 # [12.6] System Preferences > Security & Privacy > FileVault > Turn On FileVault
 # [13.7] System Settings > Privacy & Security > FileVault > Turn On...
-sudo fdesetup enable -user "$(logname)" | tee "${HOME}/Desktop/FileVault Recovery.txt"
+sudo fdesetup enable -user "$(logname)"
 
 # ====================
 # Installations
@@ -98,7 +98,7 @@ fi
 
 # Install utilities that are required for this script
 # TODO I can't remember why `coreutils` is needed; maybe try dropping it
-brew install coreutils dockutil git mysides stow
+brew install coreutils dockutil git stow
 
 # Install Consolas font family system-wide
 curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
@@ -144,9 +144,7 @@ if [ "$INCLUDE_SOFTWARE_UPDATE" = 'true' ]; then
     fi
 
     # Install any software updates currently available
-    # TODO partially disabled for now because I don't want the next macOS major version
-    # softwareupdate --install --all
-    softwareupdate --install --safari-only
+    softwareupdate --install --all
 fi
 
 set -x
@@ -169,6 +167,7 @@ defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
 
 # [13.7] Accessibility > Display > Reduce transparency = on
+# TODO Broken in macOS 27
 defaults write com.apple.universalaccess reduceTransparency -bool 'true'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
@@ -297,7 +296,7 @@ defaults write com.apple.dock show-recents -bool 'false'
 
     # Siri = Don't Show in Menu Bar
     defaults -currentHost write com.apple.controlcenter Siri -int '8'
-    Defaults write com.apple.Siri StatusMenuVisible -bool 'false'
+    defaults write com.apple.Siri StatusMenuVisible -bool 'false'
 
 # [13.7] Menu bar sort: [focus] [mirroring] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
 sleep 2
