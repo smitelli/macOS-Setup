@@ -1,29 +1,34 @@
 # Manual Steps
 
-## From-Scratch Installation (15.7)
+## From-Scratch Installation (27.2)
 
 - Language = **English**
 - Select Your Country or Region = **United States**
 - Transfer Your Data to This Mac = **Set up as new**
 - Accessibility = Not Now
-- Select Your Wi-Fi Network = ...
+- Select Your Wi-Fi Network = ... Continue ... Join
 - Create a Computer Account
     + Full name = **Scott Smitelli**
     + Account name = **ssmitelli**
     + Password = ...
-    + Allow computer account password to be reset ... = **off**
-- Sign In with Your Apple ID = Set Up Later; Skip
+    + Hint = blank
+    + Continue
+- Sign In to Your Apple Account = Other Sign-In Options; Sign in Later in Settings; Skip
 - Terms and Conditions = Agree; Agree
+- Age Range = **Adult**
+- Choose Your Look = **Dark**
 - Enable Location Services on this Mac = **on**
 - Analytics
     + Share Mac Analytics with Apple = **off**
     + Share crash and usage data with app developers = **off**
 - Screen Time = Set Up Later
-- Apple Intelligence = Set Up Later
-- Enable Ask Siri = **off**
+- Siri = Set Up Later
+- Use your photos and common phrases you type to create suggested images and Genmoji = **off**
+- Summarize Notifications = Set Up Later
+- Your Mac is Ready for FileVault = Not Now; Continue
 - Touch ID = Set Up Touch ID Later; Continue
-- Choose Your Look = Dark
 - Update Mac Automatically = Only Download Automatically
+- Liquid Glass = Leave At 50%
 
 Once at the desktop, open Terminal.app and follow instructions from the README.
 
