@@ -126,4 +126,4 @@ dump_defaults_dumb > /tmp/before; read -sp $'?\n' -n1; dump_defaults_dumb > /tmp
 dump_plist_xml() {
     F=$(mktemp); cp "$1" "$F"; plutil -convert xml1 "$F"; cat "$F"
 }
-````
+```

@@ -166,11 +166,12 @@ defaults write -g AppleAquaColorVariant -int '6'
 defaults write -g AppleHighlightColor -string '0.847059 0.847059 0.862745 Graphite'
 
 # [13.7] Accessibility > Display > Reduce transparency = on
-# TODO Broken in macOS 27
+# TODO "NSGlassTintAmount" => 1; "EnhancedBackgroundContrastEnabled" => 1; "reduceTransparency" => true
 defaults write com.apple.universalaccess reduceTransparency -bool 'true'
 
 # [12.5] Desktop & Screen Saver > Screen Saver > Show screen saver after ... = off (otherwise, 10 mins)
 # [13.7] Lock Screen > Start Screen Saver when inactive = Never
+# [27.2] Wallpaper > Screen Saver... > Start Screen Saver... = Never
 defaults -currentHost write com.apple.screensaver idleTime -int '0'
 defaults -currentHost write com.apple.screensaver lastDelayTime -int '600'
 
@@ -298,6 +299,7 @@ defaults write com.apple.dock show-recents -bool 'false'
     defaults write com.apple.Siri StatusMenuVisible -bool 'false'
 
 # [13.7] Menu bar sort: [focus] [mirroring] [now playing] [battery] [wi-fi] [sound] [bento] [clock]
+# TODO Broken in macOS 27
 sleep 2
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position BentoBox' -int '128'
 defaults write com.apple.controlcenter 'NSStatusItem Preferred Position Sound' -int '160'
@@ -328,6 +330,7 @@ defaults write com.apple.menuextra.clock ShowSeconds -bool 'true'
 #   - Allow notifications when the display is sleeping = on
 #   - Allow notifications when the screen is locked = off
 #   - Allow notifications when mirroring or sharing the display = off
+# TODO Broken in macOS 27
 PLIST='<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -515,7 +518,7 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Favorites
 # [13.7] Settings > Sidebar > Show these items in the sidebar > Favorites
-# TODO need a new way to do this
+# TODO Broken in macOS 27
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 # [13.7] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
@@ -591,6 +594,7 @@ if [ "$OS_MAJOR_VERSION" -le "14" ]; then
     defaults write com.apple.calculator ViewDefaultsKey -string 'Scientific'
 else
     # [15.0] View > Scientific
+    # TODO Broken in macOS 27
     defaults write com.apple.calculator CalculatorMode -string 'scientific'
 fi
 
@@ -628,6 +632,7 @@ if [ "$OS_MAJOR_VERSION" -le "12" ]; then
     defaults write com.apple.FontBook FBDefaultInstallDomainRef -int '1'
 else
     # [13.7] Settings > Installation > Default install location = All Users
+    # TODO Broken in macOS 27
     defaults write com.apple.FontBook installLocation -int '-2'
 fi
 
