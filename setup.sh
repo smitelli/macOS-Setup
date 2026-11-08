@@ -97,8 +97,7 @@ else
 fi
 
 # Install utilities that are required for this script
-# TODO I can't remember why `coreutils` is needed; maybe try dropping it
-brew install coreutils dockutil git stow
+brew install dockutil git stow
 
 # Install Consolas font family system-wide
 curl -fL "${SELF_URL}/data/fonts/consola{,b,i,z}.ttf" -o '/Library/Fonts/consola#1.ttf'
@@ -516,15 +515,7 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Favorites
 # [13.7] Settings > Sidebar > Show these items in the sidebar > Favorites
-mysides remove all
-mysides add Applications 'file:///Applications/'
-mysides add "$(logname)" "file://${HOME}/"
-mysides add Desktop "file://${HOME}/Desktop/"
-mysides add Documents "file://${HOME}/Documents/"
-mysides add Downloads "file://${HOME}/Downloads/"
-mysides add Movies "file://${HOME}/Movies/"
-mysides add Music "file://${HOME}/Music/"
-mysides add Pictures "file://${HOME}/Pictures/"
+# TODO need a new way to do this
 
 # [12.5] Preferences > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
 # [13.7] Settings > Sidebar > Show these items in the sidebar > Tags > Recent Tags = off
@@ -611,6 +602,7 @@ defaults write com.apple.calculator SeparatorsDefaultsKey -bool 'true'
 # ====================
 
 # [14.7] Settings > General > Sort By = First Name
+# TODO Broken in macOS 27
 defaults write com.apple.AddressBook ABNameSortingFormat -string 'sortingFirstName sortingLastName'
 
 # ====================
@@ -644,6 +636,7 @@ fi
 # ====================
 
 # [16.6] Settings > Advanced > Show features for web developers
+# TODO Broken in macOS 27
 defaults write com.apple.Safari IncludeDevelopMenu -bool 'true'
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool 'true'
 defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool 'true'
@@ -668,6 +661,9 @@ ssh-keygen -N '' -C "$(logname)@${SET_HOSTNAME}" -f "${HOME}/.ssh/id_ed25519" -t
 # ====================
 # Terminal
 # ====================
+
+# Here be exclamation points
+set +H
 
 # [12.5] Install "Basic Custom" profile
 PROFILE_NAME='Basic Custom'
@@ -853,19 +849,19 @@ defaults write com.apple.Terminal ShowLineMarks -bool 'false'
 # ====================
 
 # Install common apps
-brew install --no-quarantine firefox git-lfs keepassxc sublime-text vlc
+brew install firefox git-lfs keepassxc sublime-text vlc wget
 if [ "$USES_OPENCORE" = 'true' ]; then
-    brew install --no-quarantine opencore-patcher
+    brew install opencore-patcher
 fi
 if [ "$INCLUDE_WORKTOOLS" = 'true' ]; then
-    brew install --no-quarantine amazon-chime homebrew/cask/docker google-chrome zoom
+    brew install amazon-chime homebrew/cask/docker google-chrome zoom
 else
-    brew install --no-quarantine obsidian
+    brew install obsidian
 fi
 
 # Install some useful Quick Look plugins
 # TODO qlvideo would be nice but I can't figure out why it doesn't work
-brew install --no-quarantine qlmarkdown syntax-highlight
+brew install qlmarkdown syntax-highlight
 xattr -dr com.apple.quarantine "${HOME}"/Library/QuickLook/*.qlgenerator
 qlmanage -r
 qlmanage -r cache

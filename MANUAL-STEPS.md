@@ -49,7 +49,7 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
             - Private Relay = **off**
     + Internet Accounts > Add **Gmail**:
         * Details... > Description = email address
-        * Enable (at a minimum) **Contacts**
+        * Enable (at a minimum) **Contacts** and **Notes**
     + Users & Groups > Current User > Contacts Card: > **Open...**
         * Make sure Contacts.app is set up with the correct account
         * Card > Make This My Card
@@ -69,15 +69,26 @@ Once at the desktop, open Terminal.app and follow instructions from the README.
         * New York, U.S.A.
         * Los Angeles, U.S.A.
         * UTC
-    + Weather > Forecast (L)
+        * Melbourne, Australia
+    + Weather > Forecast (L / 5-day)
         * Location: My Location
+- Remove desktop widgets
 - Finder
     + Settings > Sidebar
-        * AirDrop = **on**
-        * iCloud Drive = **off**
+        * Recents = **off**
         * Shared = **off**
-        * Hard disks = **on**
+        * (everything under Favorites) = **on**
+        * iCloud Drive/Storage = **off**
+        * (User) = **on**
+        * (Computer) = **off**
+        * Hard disks / External disks / CDs, DVDs = **on**
+        * AirDrop = **on**
+        * Bonjour computers / Connected servers = **on**
+        * Trash = **off**
+        * Recent Tags = **off**
     + If computer/user name(s) are long, expand sidebar to first snap point
+    + Rearrange sidebar favorites: Applications, (user), (everyting else), AirDrop
+    + Rearrange sidebar locations: (hard drive), Network
 - Firefox
     + Open Firefox at least once to initialize and fill the profile directory
     + `bash -c "$(curl -fsSL https://raw.githubusercontent.com/smitelli/macOS-Setup/HEAD/firefox/setup.sh)"`
