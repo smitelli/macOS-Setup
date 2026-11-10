@@ -1,0 +1,17 @@
+{
+  "policies": {
+    "AIControls": {
+      "SidebarChatbot": {"Value": "blocked"}
+    },
+    "ExtensionSettings": {
+      "jid1-MnnxcxisBPnSXQ@jetpack": {
+        "installation_mode": "normal_installed",
+        "private_browsing": true
+      },
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "normal_installed",
+        "private_browsing": true
+      }
+    }
+  }
+}
