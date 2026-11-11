@@ -110,6 +110,9 @@ user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", 
 // [159.0] Preferences > AI controls > Block AI enhancements = on
 user_pref("browser.ai.control.default", "blocked");
 
+// [160.0] Preferences > Appearance > Window density = Compact
+user_pref("browser.uidensity", 1);
+
 // [159.0] Right-click > Ask an AI Chatbot > Remove AI Chatbot
 user_pref("browser.ml.chat.menu", false);
 
